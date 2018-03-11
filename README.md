@@ -13,3 +13,7 @@ move 1cm in up,down,left and right directions only.
 **Target**s, can just be a small dot. Since they don't move around or
 anything, the properties they should have is there posistion and to
 what agent it belongs to.
+
+# Setup
+
+Read [SETUP.org](./docs/SETUP.org) to setup `SDL2` and `SDL2_image`
