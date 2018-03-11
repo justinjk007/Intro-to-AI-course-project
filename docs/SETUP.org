@@ -22,7 +22,7 @@ string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 #+END_SRC
 
 - Now open control panel to =Edit environment variables= , you can just search for this term to
-- Add a new *System variable* named =SDL2_DIR= and value the directory
+- Add a new *System variable* named =SDL2_DIR= and set the value to the directory
   where you extracted the lib for me it will be =C:\Dev\SDL2-2.0.8=.
 - I will be using *x64* libs so I will also edit the =Path= variables for
   the user and add =C:\Dev\SDL2-2.0.8\lib\x64= folder to path.
@@ -46,7 +46,7 @@ string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
   #+END_SRC
 
 - Now open control panel to =Edit environment variables=
-- Add a new *System variable* named =SDL2_image_DIR= and value the directory
+- Add a new *System variable* named =SDL2_image_DIR= and set the value to the directory
   where you extracted the lib for me it will be =C:\Dev\SDL2_image-2.0.3=
 - I will be using *x64* libs so I will also edit the =Path= variables for
   the user and add =C:\Dev\SDL2_image-2.0.3\lib\x64= folder to path.
