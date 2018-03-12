@@ -54,3 +54,13 @@ string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 
 - *Restart the system so the environment variables are set and the path re-read*.
 - Now you can build the code with CMake
+
+** On Linux(Ubuntu)
+
+Download both =SDL2= and =SDL2_image= like this
+#+BEGIN_SRC shell
+sudo apt install  libsdl2-dev
+sudo apt install  libsdl2-image-dev
+#+END_SRC
+
+The *CMake* file I have can automatically find and build these libs
