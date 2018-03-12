@@ -2,6 +2,7 @@
 #include <SDL_image.h>
 #include <stdio.h>
 #include <string>
+#include "AI.hpp"
 
 // Screen dimension constants
 const int kScreenWidth  = 1000;  // 640
@@ -149,7 +150,8 @@ bool init()
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         success = false;
-    } else {
+    } else 
+	{
         // Set texture filtering to linear
         if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) {
             printf("Warning: Linear texture filtering not enabled!");
@@ -179,6 +181,8 @@ bool init()
                 }
             }
         }
+		// Should initialize agents/targets list here.
+
     }
 
     return success;
@@ -265,6 +269,7 @@ int main(int argc, char* args[])
 
                 // Render background texture to screen
                 // gBackgroundTexture.render(0, 0);
+				//AgentTexture.render(allAgents[1].location.x, allAgents[1].location.y);
 
                 // Render textures to the screen
                 AgentTexture.render(240, 190);
