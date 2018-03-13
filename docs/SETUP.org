@@ -21,7 +21,7 @@ endif ()
 string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 #+END_SRC
 
-- Now open control panel to =Edit environment variables= , you can just search for this term to
+- Now open control panel to =Edit environment variables= , you can just search for this term too
 - Add a new *System variable* named =SDL2_DIR= and set the value to the directory
   where you extracted the lib for me it will be =C:\Dev\SDL2-2.0.8=.
 - I will be using *x64* libs so I will also edit the =Path= variables for
@@ -58,9 +58,9 @@ string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 ** On Linux(Ubuntu)
 
 Download both =SDL2= and =SDL2_image= like this
-#+BEGIN_SRC shell
-sudo apt install  libsdl2-dev
-sudo apt install  libsdl2-image-dev
+#+BEGIN_SRC sh
+sudo apt install libsdl2-dev
+sudo apt install libsdl2-image-dev
 #+END_SRC
 
 The *CMake* file I have can automatically find and build these libs
