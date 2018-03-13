@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.2)
 project(AI_Project)
 
+# Generate compile_commands.json
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 if(UNIX)
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 endif(UNIX)
@@ -24,4 +27,5 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets
 message("-- Copied all the assets")
 
 add_executable(main src/GUI.cpp)
+add_executable(run_tests tests/tests.cpp)
 target_link_libraries(main ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
