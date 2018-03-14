@@ -34,6 +34,6 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets
   DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 message("-- Copied all the assets")
 
-add_executable(main src/GUI.cpp)
+add_executable(main src/Simulation.cpp src/AI.cpp)
 add_executable(run_tests tests/tests.cpp)
 target_link_libraries(main ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
