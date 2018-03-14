@@ -18,41 +18,26 @@ class Environment
 class Agent
 {
 public:
-	// To differentiate between agents
-	int agentID;
-	// Position within environment
-    Point<int> location;
-	// Default constructor
-    Agent() : location(Point<int>()) {}
+    int agentID;                         // To differentiate between agents
+    Point<int> location;                 // Position within environment
+    Agent() : location(Point<int>()) {}  // Default constructor
+    void Update();                       // Perform Logic/Physics changes-movements
+    void ScanArea();                     // Identify Nearby objects
+    void TargetFound();                  // Increment targets found
 
-	// Perform Logic/Physics changes-movements
-	void Update();
-	// Identify Nearby objects
-	void ScanArea();
-	// Increment targets found
-	void TargetFound();
-
-private:
-	// Might not need this counter, use for determinng end condition
-	int targetsFound = 0;
+   private:
+    int targetsFound;  // Might not need this counter, use for determinng end condition
 };
 
 class Target
 {
-public:
-	// Position within environment
-    Point<double> location;
-	// Which agent the target belongs to
-	int ownerAgent;
-	// Default constructor
+   public:
+    Point<double> location;  // Position within environment
+    int ownerAgent;          // Which agent the target belongs to
     Target() : location(Point<double>()) {}
-
-	// Perform Logic/Physics changes
-	void Update();
-
-private:
-	// Use to determine when to stop rendering target
-	bool pickedUp = false;
+    void Update();  // Perform Logic/Physics changes
+   private:
+    bool pickedUp;  // Use to determine when to stop rendering target
 };
 
 #endif /* AI_HPP */
