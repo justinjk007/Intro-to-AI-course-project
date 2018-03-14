@@ -1,18 +1,5 @@
 #include "AI.hpp"
 
-
-void Agent::SetAgentLocation(Point<int> loc)
-{
-	this->location.x = loc.x;
-	this->location.y = loc.y;
-}
-
-void Target::SetTargetLocation(Point<int> loc)
-{
-	this->location.x = loc.x;
-	this->location.y = loc.y;
-}
-
 void Agent::Update()
 {
 	// Logic/Calculations happen here
@@ -32,30 +19,6 @@ void Target::Update()
 		this->location.y = NULL;
 	}
 
-}
-
-void Agent::Render()
-{
-	// Render Agent
-	// SDL_Rect controls how large the image is
-	SDL_Rect agentSize;
-	agentSize.x = 0;
-	agentSize.y = 0;
-	agentSize.w = 800;
-	agentSize.h = 21;
-	//SDL_RenderCopy(renderer, putTextureHere, 0, &dstrect);
-}
-
-void Target::Render()
-{
-	// Render Target
-	// SDL_Rect controls how large the image is
-	SDL_Rect targetSize;
-	targetSize.x = 0;
-	targetSize.y = 0;
-	targetSize.w = 800;
-	targetSize.h = 21;
-	//SDL_RenderCopy(renderer, putTextureHere, 0, &dstrect);
 }
 
 void Agent::ScanArea()
