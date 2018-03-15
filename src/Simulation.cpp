@@ -87,19 +87,19 @@ bool LTexture::loadFromFile(std::string path, SDL_Renderer* gRenderer)
 
         // Create texture from surface pixels
 		int format = SDL_PIXELFORMAT_RGBA8888;
-		newTexture = create_texture_from_surface(gRenderer, loadedSurface, 0, NULL, false);
-        //newTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
-        if (newTexture == NULL) {
-            printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(),
-                   SDL_GetError());
-        } else {
-            // Get image dimensions
-            mWidth  = loadedSurface->w;
-            mHeight = loadedSurface->h;
-        }
+		newTexture = create_texture_from_surface(gRenderer, loadedSurface, format, NULL, false);
+		//newTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
+		if (newTexture == NULL) {
+		    printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(),
+			   SDL_GetError());
+		} else {
+		    // Get image dimensions
+		    mWidth  = loadedSurface->w;
+		    mHeight = loadedSurface->h;
+		}
 
-        // Get rid of old loaded surface
-        SDL_FreeSurface(loadedSurface);
+		// Get rid of old loaded surface
+		SDL_FreeSurface(loadedSurface);
     }
 
     // Return success

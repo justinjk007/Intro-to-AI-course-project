@@ -48,4 +48,4 @@ private:
     void NewSimulation();  // Run setup for objects after initialization procedures
 };
 
-#endif SIMULATION_HPP
+#endif
