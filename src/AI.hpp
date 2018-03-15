@@ -17,7 +17,7 @@ class Environment
 
 class Agent
 {
-public:
+   public:
     int agentID;                         // To differentiate between agents
     Point<int> location;                 // Position within environment
     Agent() : location(Point<int>()) {}  // Default constructor

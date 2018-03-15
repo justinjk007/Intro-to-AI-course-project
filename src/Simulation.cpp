@@ -26,42 +26,40 @@ LTexture::~LTexture()
 
 // Code courtesy of FluffyDragon#0567 and theweirdnate#6818 from discord
 // This formats the texture in a 'better' way.
-SDL_Texture * LTexture::create_texture_from_surface(SDL_Renderer * sdlRenderer, SDL_Surface * surf, int format, SDL_Color * sdlColorKey, bool destroySurface)
+SDL_Texture* LTexture::create_texture_from_surface(SDL_Renderer* sdlRenderer, SDL_Surface* surf,
+                                                   int format, SDL_Color* sdlColorKey,
+                                                   bool destroySurface)
 {
-	if (surf == NULL || sdlRenderer == NULL)
-	{
-		return NULL;
-	}
-	int pixelbytes = 0;
-	Uint8 r, g, b, a;
-	SDL_Surface* cast_img = SDL_ConvertSurfaceFormat(surf, format, 0);
-	pixelbytes = cast_img->w*cast_img->h;
-	pixelbytes = pixelbytes * 4;
-	unsigned char* pixels = (unsigned char*)cast_img->pixels;
-	if (sdlColorKey != NULL)
-	{
-		for (int i = 0; i<pixelbytes; i++)
-		{
-			a = pixels[i + 0];
-			r = pixels[i + 1];
-			g = pixels[i + 2];
-			b = pixels[i + 3];
-			if (r == sdlColorKey->r && g == sdlColorKey->g && b == sdlColorKey->b)
-			{
-				pixels[i + 0] = 0;
-			}
-		}
-	}
-	SDL_Rect rect = { 0,0,cast_img->w,cast_img->h };
-	SDL_Texture * newTexture = SDL_CreateTexture(sdlRenderer, format, SDL_TEXTUREACCESS_STATIC, cast_img->w, cast_img->h);
-	SDL_UpdateTexture(newTexture, &rect, cast_img->pixels, cast_img->w * 4);
-	SDL_SetTextureBlendMode(newTexture, SDL_BLENDMODE_BLEND);
-	SDL_FreeSurface(cast_img);
-	if (destroySurface)
-	{
-		SDL_FreeSurface(surf);
-	}
-	return newTexture;
+    if (surf == NULL || sdlRenderer == NULL) {
+        return NULL;
+    }
+    int pixelbytes = 0;
+    Uint8 r, g, b, a;
+    SDL_Surface* cast_img = SDL_ConvertSurfaceFormat(surf, format, 0);
+    pixelbytes            = cast_img->w * cast_img->h;
+    pixelbytes            = pixelbytes * 4;
+    unsigned char* pixels = (unsigned char*)cast_img->pixels;
+    if (sdlColorKey != NULL) {
+        for (int i = 0; i < pixelbytes; i++) {
+            a = pixels[i + 0];
+            r = pixels[i + 1];
+            g = pixels[i + 2];
+            b = pixels[i + 3];
+            if (r == sdlColorKey->r && g == sdlColorKey->g && b == sdlColorKey->b) {
+                pixels[i + 0] = 0;
+            }
+        }
+    }
+    SDL_Rect rect = {0, 0, cast_img->w, cast_img->h};
+    SDL_Texture* newTexture =
+        SDL_CreateTexture(sdlRenderer, format, SDL_TEXTUREACCESS_STATIC, cast_img->w, cast_img->h);
+    SDL_UpdateTexture(newTexture, &rect, cast_img->pixels, cast_img->w * 4);
+    SDL_SetTextureBlendMode(newTexture, SDL_BLENDMODE_BLEND);
+    SDL_FreeSurface(cast_img);
+    if (destroySurface) {
+        SDL_FreeSurface(surf);
+    }
+    return newTexture;
 }
 
 bool LTexture::loadFromFile(std::string path, SDL_Renderer* gRenderer)
@@ -86,20 +84,20 @@ bool LTexture::loadFromFile(std::string path, SDL_Renderer* gRenderer)
         SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 0xFF, 0xFF));
 
         // Create texture from surface pixels
-		int format = SDL_PIXELFORMAT_RGBA8888;
-		newTexture = create_texture_from_surface(gRenderer, loadedSurface, format, NULL, false);
-		//newTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
-		if (newTexture == NULL) {
-		    printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(),
-			   SDL_GetError());
-		} else {
-		    // Get image dimensions
-		    mWidth  = loadedSurface->w;
-		    mHeight = loadedSurface->h;
-		}
+        int format = SDL_PIXELFORMAT_RGBA8888;
+        newTexture = create_texture_from_surface(gRenderer, loadedSurface, format, NULL, false);
+        // newTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
+        if (newTexture == NULL) {
+            printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(),
+                   SDL_GetError());
+        } else {
+            // Get image dimensions
+            mWidth  = loadedSurface->w;
+            mHeight = loadedSurface->h;
+        }
 
-		// Get rid of old loaded surface
-		SDL_FreeSurface(loadedSurface);
+        // Get rid of old loaded surface
+        SDL_FreeSurface(loadedSurface);
     }
 
     // Return success
@@ -182,9 +180,9 @@ bool Simulation::Init()
 void Simulation::NewSimulation()
 {
     // setup objects here, call constructors etc...
-	Point<int> testPoint (3, 4);
-	int ID = 10;
-	Render(testPoint, ID);
+    Point<int> testPoint(3, 4);
+    int ID = 10;
+    Render(testPoint, ID);
 }
 
 void Simulation::Render(Point<int> newLoc, int agentID)
@@ -217,7 +215,7 @@ void Simulation::Render(Point<int> newLoc, int agentID)
 
     SDL_Rect targetSize2;
     targetSize2.x = 600;
-    targetSize2.y = 200;
+    targetSize2.y = 595;
     targetSize2.w = TargetA2Texture.getWidth();
     targetSize2.h = TargetA2Texture.getHeight();
     SDL_RenderCopy(gRenderer, TargetA2Texture.mTexture, 0, &targetSize2);

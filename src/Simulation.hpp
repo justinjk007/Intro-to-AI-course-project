@@ -10,18 +10,20 @@
 class LTexture
 {
 public:
-    LTexture();                           // Initializes variables (constructor)
-    ~LTexture();                          // Deallocates memory (destructor)
-	SDL_Texture * create_texture_from_surface(SDL_Renderer * sdlRenderer, SDL_Surface * surf, int format, SDL_Color * sdlColorKey, bool destroySurface);
-	// Loads image at specified path
+    LTexture();   // Initializes variables (constructor)
+    ~LTexture();  // Deallocates memory (destructor)
+    SDL_Texture* create_texture_from_surface(SDL_Renderer* sdlRenderer, SDL_Surface* surf,
+                                             int format, SDL_Color* sdlColorKey,
+                                             bool destroySurface);
+    // Loads image at specified path
     bool loadFromFile(std::string path, SDL_Renderer* gRenderer);
     // Gets image dimensions
     int getWidth();
     int getHeight();
 
-	SDL_Texture* mTexture;  // The actual hardware texture
+    SDL_Texture* mTexture;  // The actual hardware texture
 
-private:
+   private:
     // Image dimensions
     int mWidth;
     int mHeight;
@@ -35,11 +37,11 @@ class Simulation
     bool Init();
     bool loadTextures();
 
-	// SDL objects
-	SDL_Window* gWindow;
-	SDL_Renderer* gRenderer;
+    // SDL objects
+    SDL_Window* gWindow;
+    SDL_Renderer* gRenderer;
 
-private:
+   private:
     // Screen dimension constants
     const int kScreenWidth  = 1000;  // 640
     const int kScreenHeight = 1000;  // 480
