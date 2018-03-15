@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#undef main
 #include <string>
 #include "Point.hpp"
 
