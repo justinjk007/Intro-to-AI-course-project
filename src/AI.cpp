@@ -1,4 +1,5 @@
 #include "AI.hpp"
+#include <string>
 
 void Agent::Update()
 {
@@ -12,9 +13,10 @@ void Target::Update()
     // Logic/Calculations happen here
 
     // If a target gets picked up, remove it from the environment
-    if (this->pickedUp == true) {
-        this->location.x = NULL;
-        this->location.y = NULL;
+    if (this->pickedUp == true) 
+	{
+        //this->location.x = 0.0;
+        //this->location.y = 0.0;
     }
 }
 
