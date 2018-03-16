@@ -10,14 +10,13 @@
 // Texture wrapper class
 class LTexture
 {
-public:
+   public:
     LTexture();   // Initializes variables (constructor)
     ~LTexture();  // Deallocates memory (destructor)
     SDL_Texture* create_texture_from_surface(SDL_Renderer* sdlRenderer, SDL_Surface* surf,
                                              int format, SDL_Color* sdlColorKey,
                                              bool destroySurface);
-    // Loads image at specified path
-    bool loadFromFile(std::string path, SDL_Renderer* gRenderer);
+    bool loadFromFile(std::string path, SDL_Renderer* gRenderer);  // Loads image at specified path
     // Gets image dimensions
     int getWidth();
     int getHeight();
@@ -35,20 +34,17 @@ class Simulation
    public:
     Simulation();
     ~Simulation();
-    bool Init();
-    bool loadTextures();
-
-    // SDL objects
-    SDL_Window* gWindow;
-    SDL_Renderer* gRenderer;
+    void Render(Point<int> newLoc, int agentID);  // Render object to screen
 
    private:
     // Screen dimension constants
     const int kScreenWidth  = 1000;  // 640
     const int kScreenHeight = 1000;  // 480
-
-    void Render(Point<int> newLoc, int agentID);  // Render object to screen
-    void NewSimulation();  // Run setup for objects after initialization procedures
+    // SDL objects
+    SDL_Window* gWindow;
+    SDL_Renderer* gRenderer;
+    bool Init();
+    bool loadTextures();
 };
 
 #endif

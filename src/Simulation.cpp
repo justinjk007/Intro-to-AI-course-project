@@ -120,10 +120,8 @@ Simulation::Simulation()
     // Dont actually know what this is needed for yet...
     gWindow   = NULL;
     gRenderer = NULL;
-
     Init();
     loadTextures();
-    NewSimulation();
 }
 
 Simulation::~Simulation()
@@ -177,14 +175,6 @@ bool Simulation::Init()
     return success;
 }
 
-void Simulation::NewSimulation()
-{
-    // setup objects here, call constructors etc...
-    Point<int> testPoint(3, 4);
-    int ID = 10;
-    Render(testPoint, ID);
-}
-
 void Simulation::Render(Point<int> newLoc, int agentID)
 {
     // Initialize renderer color, clear screen to white
@@ -226,26 +216,19 @@ void Simulation::Render(Point<int> newLoc, int agentID)
 
 bool Simulation::loadTextures()
 {
-    // Flag
-    bool success = true;
-
     // Load agent texture
     if (!AgentTexture.loadFromFile("assets/agentAv2-100x100.png", gRenderer)) {
         printf("Failed to load Agent texture image!\n");
-        success = false;
+        return false;
     }
-
     // Load target (A1) texture
     if (!TargetA1Texture.loadFromFile("assets/targetA1-10x10.png", gRenderer)) {
         printf("Failed to load Target A1 texture image!\n");
-        success = false;
+        return false;
     }
-
     // Load target (A2) texture
     if (!TargetA2Texture.loadFromFile("assets/targetA2-10x10.png", gRenderer)) {
         printf("Failed to load Target A2 texture image!\n");
-        success = false;
+        return false;
     }
-
-    return success;
 }
