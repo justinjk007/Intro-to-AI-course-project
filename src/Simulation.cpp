@@ -117,6 +117,9 @@ Simulation::Simulation()
     gRenderer = NULL;
     Init();
     loadTextures();
+    // Initialize renderer color, clear screen to white
+    SDL_RenderClear(gRenderer);
+    SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 }
 
 Simulation::~Simulation()
@@ -166,12 +169,8 @@ bool Simulation::Init()
     return success;
 }
 
-void Simulation::renderAgent(Point<int> newLoc, int id)
+void Simulation::renderAgent(Point<int> location, int id)
 {
-    // Initialize renderer color, clear screen to white
-    SDL_RenderClear(gRenderer);
-    SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
     // Draw things in order, so background first, then foreground
     // Anything not drawn to the back buffer will not be rendered
     // when RenderPresent is called to be written to the front buffer (screen)
@@ -179,26 +178,24 @@ void Simulation::renderAgent(Point<int> newLoc, int id)
     // Render Agents
     // SDL_Rect controls how large the image is and where it is rendered
     SDL_Rect agentSize;
-    agentSize.x = 600;
-    agentSize.y = 600;
-    agentSize.w = this->AgentTexture[0].getWidth();
-    agentSize.h = this->AgentTexture[0].getHeight();
-    SDL_RenderCopy(gRenderer, this->AgentTexture[0].mTexture, 0, &agentSize);
-
+    agentSize.x = location.x();
+    agentSize.y = location.y();
+    agentSize.w = this->AgentTexture[id].getWidth();
+    agentSize.h = this->AgentTexture[id].getHeight();
+    SDL_RenderCopy(gRenderer, this->AgentTexture[id].mTexture, 0, &agentSize);
     SDL_RenderPresent(gRenderer);  // Update screen
 }
 
-void Simulation::renderTarget(Point<int> newLoc, int id)
+void Simulation::renderTarget(Point<int> location, int id)
 {
     // Render Targets
     // SDL_Rect controls how large the image is and where it is rendered
     SDL_Rect targetSize;
-    targetSize.x = 200;
-    targetSize.y = 200;
-    targetSize.w = this->TargetTexture[0].getWidth();
-    targetSize.h = this->TargetTexture[0].getHeight();
-    SDL_RenderCopy(gRenderer, this->TargetTexture[0].mTexture, 0, &targetSize);
-
+    targetSize.x = location.x();
+    targetSize.y = location.y();
+    targetSize.w = this->TargetTexture[id].getWidth();
+    targetSize.h = this->TargetTexture[id].getHeight();
+    SDL_RenderCopy(gRenderer, this->TargetTexture[id].mTexture, 0, &targetSize);
     SDL_RenderPresent(gRenderer);  // Update screen
 }
 
