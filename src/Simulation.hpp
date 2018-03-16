@@ -34,7 +34,8 @@ class Simulation
    public:
     Simulation();
     ~Simulation();
-    void Render(Point<int> newLoc, int agentID);  // Render object to screen
+    void renderAgent(Point<int> newLoc, int id);  // update/render agent
+    void renderTarget(Point<int> newLoc, int id);  // ipdate/render target
 
    private:
     // Screen dimension constants
@@ -43,8 +44,11 @@ class Simulation
     // SDL objects
     SDL_Window* gWindow;
     SDL_Renderer* gRenderer;
+    // George's crazy way of modernizing constructors
     bool Init();
     bool loadTextures();
+    LTexture AgentTexture[5]; // Array containing 5 images for 5 Agents
+    LTexture TargetTexture[5]; // Array containing 5 images for 5 Targets
 };
 
 #endif
