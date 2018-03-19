@@ -1,10 +1,5 @@
 #include "Simulation.hpp"
 
-// Scene textures
-LTexture AgentTexture;
-LTexture TargetA1Texture;
-LTexture TargetA2Texture;
-
 LTexture::LTexture()
 {
     // Initialize
@@ -120,10 +115,11 @@ Simulation::Simulation()
     // Dont actually know what this is needed for yet...
     gWindow   = NULL;
     gRenderer = NULL;
-
     Init();
     loadTextures();
-    NewSimulation();
+    // Initialize renderer color, clear screen to white
+    SDL_RenderClear(gRenderer);
+    SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 }
 
 Simulation::~Simulation()
@@ -137,9 +133,7 @@ Simulation::~Simulation()
 
 bool Simulation::Init()
 {
-    // Flag
     bool success = true;
-
     // Initialize SDL
     // SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS)
     // If you want to intialize multiple things
@@ -163,7 +157,6 @@ bool Simulation::Init()
             } else {
                 // Initialize renderer color
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
                 // Initialize PNG loading
                 int imgFlags = IMG_INIT_PNG;
                 if (!(IMG_Init(imgFlags) & imgFlags)) {
@@ -173,24 +166,11 @@ bool Simulation::Init()
             }
         }
     }
-
     return success;
 }
 
-void Simulation::NewSimulation()
+void Simulation::renderAgent(Point<int> location, int id)
 {
-    // setup objects here, call constructors etc...
-    Point<int> testPoint(3, 4);
-    int ID = 10;
-    Render(testPoint, ID);
-}
-
-void Simulation::Render(Point<int> newLoc, int agentID)
-{
-    // Initialize renderer color, clear screen to white
-    SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-    SDL_RenderClear(gRenderer);
-
     // Draw things in order, so background first, then foreground
     // Anything not drawn to the back buffer will not be rendered
     // when RenderPresent is called to be written to the front buffer (screen)
@@ -198,54 +178,39 @@ void Simulation::Render(Point<int> newLoc, int agentID)
     // Render Agents
     // SDL_Rect controls how large the image is and where it is rendered
     SDL_Rect agentSize;
-    agentSize.x = 600;
-    agentSize.y = 600;
-    agentSize.w = AgentTexture.getWidth();
-    agentSize.h = AgentTexture.getHeight();
-    SDL_RenderCopy(gRenderer, AgentTexture.mTexture, 0, &agentSize);
+    agentSize.x = location.x();
+    agentSize.y = location.y();
+    agentSize.w = this->AgentTexture[id].getWidth();
+    agentSize.h = this->AgentTexture[id].getHeight();
+    SDL_RenderCopy(gRenderer, this->AgentTexture[id].mTexture, 0, &agentSize);
+    SDL_RenderPresent(gRenderer);  // Update screen
+}
 
+void Simulation::renderTarget(Point<int> location, int id)
+{
     // Render Targets
     // SDL_Rect controls how large the image is and where it is rendered
     SDL_Rect targetSize;
-    targetSize.x = 200;
-    targetSize.y = 200;
-    targetSize.w = TargetA1Texture.getWidth();
-    targetSize.h = TargetA1Texture.getHeight();
-    SDL_RenderCopy(gRenderer, TargetA1Texture.mTexture, 0, &targetSize);
-
-    SDL_Rect targetSize2;
-    targetSize2.x = 600;
-    targetSize2.y = 595;
-    targetSize2.w = TargetA2Texture.getWidth();
-    targetSize2.h = TargetA2Texture.getHeight();
-    SDL_RenderCopy(gRenderer, TargetA2Texture.mTexture, 0, &targetSize2);
-
-    // Update screen
-    SDL_RenderPresent(gRenderer);
+    targetSize.x = location.x();
+    targetSize.y = location.y();
+    targetSize.w = this->TargetTexture[id].getWidth();
+    targetSize.h = this->TargetTexture[id].getHeight();
+    SDL_RenderCopy(gRenderer, this->TargetTexture[id].mTexture, 0, &targetSize);
+    SDL_RenderPresent(gRenderer);  // Update screen
 }
 
 bool Simulation::loadTextures()
 {
-    // Flag
-    bool success = true;
-
-    // Load agent texture
-    if (!AgentTexture.loadFromFile("assets/agentAv2-100x100.png", gRenderer)) {
-        printf("Failed to load Agent texture image!\n");
-        success = false;
+    for (int i = 0; i < 5; ++i) {
+        // Load agent texture
+        if (!this->AgentTexture[i].loadFromFile("assets/agentAv2-100x100.png", gRenderer)) {
+            printf("Failed to load Agent texture image!\n");
+            return false;
+        }
+        // Load target (A1) texture
+        if (!this->TargetTexture[i].loadFromFile("assets/targetA1-10x10.png", gRenderer)) {
+            printf("Failed to load Target A1 texture image!\n");
+            return false;
+        }
     }
-
-    // Load target (A1) texture
-    if (!TargetA1Texture.loadFromFile("assets/targetA1-10x10.png", gRenderer)) {
-        printf("Failed to load Target A1 texture image!\n");
-        success = false;
-    }
-
-    // Load target (A2) texture
-    if (!TargetA2Texture.loadFromFile("assets/targetA2-10x10.png", gRenderer)) {
-        printf("Failed to load Target A2 texture image!\n");
-        success = false;
-    }
-
-    return success;
 }
