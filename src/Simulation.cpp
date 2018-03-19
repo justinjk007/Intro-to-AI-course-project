@@ -113,7 +113,7 @@ int LTexture::getHeight()
 Simulation::Simulation()
 {
     // Initializes both objects as null, before each is assigned
-	//an SDL object.
+    // an SDL object.
     gWindow   = NULL;
     gRenderer = NULL;
     Init();
@@ -181,10 +181,10 @@ void Simulation::renderAgent(Point<int> location, int id)
     SDL_Rect agentSize;
     agentSize.x = location.x();
     agentSize.y = location.y();
-    //agentSize.w = this->AgentTexture[id].getWidth();
-    //agentSize.h = this->AgentTexture[id].getHeight();
-	agentSize.w = 100;
-	agentSize.h = 100;
+    // agentSize.w = this->AgentTexture[id].getWidth();
+    // agentSize.h = this->AgentTexture[id].getHeight();
+    agentSize.w = 100;
+    agentSize.h = 100;
     SDL_RenderCopy(gRenderer, this->AgentTexture[id].mTexture, 0, &agentSize);
     SDL_RenderPresent(gRenderer);  // Update screen
 }
@@ -196,34 +196,29 @@ void Simulation::renderTarget(Point<int> location, int id)
     SDL_Rect targetSize;
     targetSize.x = location.x();
     targetSize.y = location.y();
-    //targetSize.w = this->TargetTexture[id].getWidth();
-    //targetSize.h = this->TargetTexture[id].getHeight();
-	targetSize.w = 10;
-	targetSize.h = 10;
+    // targetSize.w = this->TargetTexture[id].getWidth();
+    // targetSize.h = this->TargetTexture[id].getHeight();
+    targetSize.w = 10;
+    targetSize.h = 10;
     SDL_RenderCopy(gRenderer, this->TargetTexture[id].mTexture, 0, &targetSize);
     SDL_RenderPresent(gRenderer);  // Update screen
 }
 
 bool Simulation::loadTextures()
 {
+    std::string file_name;
     for (int i = 0; i < 5; ++i) {
         // Load agent texture
-       /* if (!this->AgentTexture[i].loadFromFile("assets/agentAv2-100x100.png", gRenderer)) {
+        file_name = "assets/Agent" + std::to_string(i+1) + "_HD.png";
+        if (!this->AgentTexture[i].loadFromFile(file_name, gRenderer)) {
             printf("Failed to load Agent texture image!\n");
             return false;
-        }*/
-		if (!this->AgentTexture[i].loadFromFile("assets/Agent1_HD.png", gRenderer)) {
-			printf("Failed to load Agent texture image!\n");
-			return false;
-		}
+        }
         // Load target (A1) texture
-        /*if (!this->TargetTexture[i].loadFromFile("assets/targetA1-10x10.png", gRenderer)) {
+        file_name = "assets/Target" + std::to_string(i+1) + "_HD.png";
+        if (!this->TargetTexture[i].loadFromFile(file_name, gRenderer)) {
             printf("Failed to load Target A1 texture image!\n");
             return false;
-        }*/
-		if (!this->TargetTexture[i].loadFromFile("assets/Target1_HD.png", gRenderer)) {
-			printf("Failed to load Target A1 texture image!\n");
-			return false;
-		}
+        }
     }
 }
