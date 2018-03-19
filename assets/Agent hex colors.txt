@@ -1,0 +1,5 @@
+Agent 1:
+Agent 2: #4800FF
+Agent 3: #00FF5E
+Agent 4: #E1FF00
+Agent 5: #00C3FF
