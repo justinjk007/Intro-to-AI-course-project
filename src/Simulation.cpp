@@ -221,4 +221,5 @@ bool Simulation::loadTextures()
             return false;
         }
     }
+    return true;
 }

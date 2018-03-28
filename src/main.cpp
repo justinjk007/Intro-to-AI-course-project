@@ -1,6 +1,12 @@
 #include <chrono>
 #include <thread>
 #include "Simulation.hpp"
+#undef main
+
+// This macro disables the extra cmd window popup when in Microsoft windows
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
 
 int main()
 {
@@ -21,7 +27,7 @@ int main()
     world.renderAgent(testPoint3, 2);
     world.renderAgent(testPoint4, 3);
     world.renderAgent(testPoint5, 4);
-    world.renderAgent(testPoint6, 0);
+    world.renderTarget(testPoint6, 0);
     world.renderTarget(testPoint7, 1);
     world.renderTarget(testPoint8, 2);
     world.renderTarget(testPoint9, 3);
