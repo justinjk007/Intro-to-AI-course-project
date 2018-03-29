@@ -11,15 +11,19 @@ Environment::Environment()
     boundaries[3] = Point<int>(0, 1000);     // Bottom left corner
 
     // Get some random numbers for positions
-    srand((unsigned)time(0));
-    int floor = 0, ceiling = 1000, range = (ceiling - floor);
-    int random[4];
-    for (int i = 0; i < 4; ++i) {
-        random[i] = floor + int((range * rand()) / (RAND_MAX + 1.0));
+    std::srand(std::time(nullptr));
+    int floor = 0, ceiling = 1000;
+    int random[2];
+    for (int i = 0; i < 1; ++i) {
+        random[0] = floor + std::rand() / (RAND_MAX / ceiling + floor);
+        random[1] = floor + std::rand() / (RAND_MAX / ceiling + floor);
+        Agent one(Point<int>(random[0], random[1]), 0);
+        Target two(Point<int>(random[1], random[0]), 0);
+        one.target_pointer = &this->targets;
+        this->agents.push_back(one);
+        this->targets.push_back(two);
+        // Add a second loop here when you need more than 1 target per agent
     }
-
-    this->agents.push_back(Agent(Point<int>(random[0], random[1]), 0));
-    this->targets.push_back(Target(Point<int>(random[2], random[3]), 0));
 }
 
 void Environment::render()
@@ -29,10 +33,11 @@ void Environment::render()
      * update them one by one by calling the front signals
      */
     for (auto it = this->agents.begin(); it != this->agents.end(); ++it) {
-	emit renderAgent(it->location,it->id);
+        emit renderAgent(it->location, it->id);
     }
-
     for (auto it = this->targets.begin(); it != this->targets.end(); ++it) {
-	emit renderTarget(it->location,it->id);
+        emit renderTarget(it->location, it->id);
     }
 }
+
+void Agent::Update() {}

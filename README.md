@@ -20,6 +20,9 @@ what agent it belongs to.
   * It also create 5 agents with random locations within the boundaries.
   * Then create 5 targets for each of the agents, total 25.
   * Sent this to the frontend so it can render
+  * Add a pointer to a vector as a member variable in the Agent class
+  * Everytime an agent is asked to update it should be pointed to the environments target list
+  * It should check if each target is in a 10 cm radius circle, point in circle check idk
 
 # Setup
 

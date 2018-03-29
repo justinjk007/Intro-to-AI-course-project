@@ -5,6 +5,14 @@
 #include <vector>
 #include "Point.hpp"
 
+class Target
+{
+public:
+    Target(Point<int> loc, int owner) : location(loc), id(owner) {}
+    Point<int> location;  // Position within environment
+    int id;               // Which agent the target belongs to
+};
+
 class Agent
 {
    public:
@@ -12,22 +20,13 @@ class Agent
     {
         targetsFound = 0;
     }
+    std::vector<Target>* target_pointer;
     int targetsFound;
     void Update();        // Perform Logic/Physics changes-movements
     void ScanArea();      // Identify Nearby objects
     void TargetFound();   // Increment targets found
+    Point<int> location;  // Position within environment
     int id;               // To differentiate between agents
-    Point<int> location;  // Position within environment
-};
-
-class Target
-{
-   public:
-    Target(Point<int> loc, int owner) : location(loc), id(owner)
-    {
-    }
-    Point<int> location;  // Position within environment
-    int id;               // Which agent the target belongs to
 };
 
 class Environment : public QObject
@@ -42,7 +41,7 @@ class Environment : public QObject
     Environment();
     void render();
 
-   signals:
+signals:
     void renderAgent(Point<int>, int);   // update/render agent
     void renderTarget(Point<int>, int);  // ipdate/render target
 };
