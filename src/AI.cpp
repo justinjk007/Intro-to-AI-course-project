@@ -19,7 +19,6 @@ Environment::Environment()
         random[1] = floor + std::rand() / (RAND_MAX / ceiling + floor);
         Agent one(Point<int>(random[0], random[1]), 0);
         Target two(Point<int>(random[1], random[0]), 0);
-        one.target_pointer = &this->targets;
         this->agents.push_back(one);
         this->targets.push_back(two);
         // Add a second loop here when you need more than 1 target per agent
