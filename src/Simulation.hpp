@@ -3,9 +3,10 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
-#undef main
+#include <QObject>
 #include <string>
 #include "Point.hpp"
+#undef main
 
 // Texture wrapper class
 class LTexture
@@ -29,26 +30,26 @@ class LTexture
     int mHeight;
 };
 
-class Simulation
+class Simulation : public QObject
 {
-   public:
+    Q_OBJECT
+public:
     Simulation();
     ~Simulation();
-    void renderAgent(Point<int> newLoc, int id);  // update/render agent
-    void renderTarget(Point<int> newLoc, int id);  // ipdate/render target
+    void renderAgent(Point<int>, int);   // update/render agent
+    void renderTarget(Point<int>, int);  // ipdate/render target
 
-   private:
+private:
     // Screen dimension constants
     const int kScreenWidth  = 1000;  // 640
     const int kScreenHeight = 1000;  // 480
     // SDL objects
     SDL_Window* gWindow;
     SDL_Renderer* gRenderer;
-    // George's crazy way of modernizing constructors
     bool Init();
     bool loadTextures();
-    LTexture AgentTexture[5]; // Array containing 5 images for 5 Agents
-    LTexture TargetTexture[5]; // Array containing 5 images for 5 Targets
+    LTexture AgentTexture[5];   // Array containing 5 images for 5 Agents
+    LTexture TargetTexture[5];  // Array containing 5 images for 5 Targets
 };
 
 #endif

@@ -1,43 +1,50 @@
 #ifndef AI_HPP
 #define AI_HPP
 
+#include <QObject>
+#include <vector>
 #include "Point.hpp"
-
-class Environment
-{
-    Point<int> boundaries[4];
-    Environment()
-    {
-        this->boundaries[0] = Point<int>();
-        this->boundaries[1] = Point<int>();
-        this->boundaries[2] = Point<int>();
-        this->boundaries[3] = Point<int>();
-    }
-};
 
 class Agent
 {
    public:
-    int agentID;                         // To differentiate between agents
-    Point<int> location;                 // Position within environment
-    Agent() : location(Point<int>()) {}  // Default constructor
-    void Update();                       // Perform Logic/Physics changes-movements
-    void ScanArea();                     // Identify Nearby objects
-    void TargetFound();                  // Increment targets found
-
-   private:
-    int targetsFound;  // Might not need this counter, use for determinng end condition
+    Agent(Point<int> loc, int id) : location(loc), id(id)
+    {
+        targetsFound = 0;
+    }
+    int targetsFound;
+    void Update();        // Perform Logic/Physics changes-movements
+    void ScanArea();      // Identify Nearby objects
+    void TargetFound();   // Increment targets found
+    int id;               // To differentiate between agents
+    Point<int> location;  // Position within environment
 };
 
 class Target
 {
    public:
-    Point<double> location;  // Position within environment
-    int ownerAgent;          // Which agent the target belongs to
-    Target() : location(Point<double>()) {}
-    void Update();  // Perform Logic/Physics changes
+    Target(Point<int> loc, int owner) : location(loc), id(owner)
+    {
+    }
+    Point<int> location;  // Position within environment
+    int id;               // Which agent the target belongs to
+};
+
+class Environment : public QObject
+{
+    Q_OBJECT
    private:
-    bool pickedUp;  // Use to determine when to stop rendering target
+    Point<int> boundaries[4];
+    std::vector<Agent> agents;
+    std::vector<Target> targets;
+
+   public:
+    Environment();
+    void render();
+
+   signals:
+    void renderAgent(Point<int>, int);   // update/render agent
+    void renderTarget(Point<int>, int);  // ipdate/render target
 };
 
 #endif /* AI_HPP */

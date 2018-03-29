@@ -18,13 +18,23 @@ endif(UNIX)
 
 # SDL Setup
 find_package(SDL2 REQUIRED)
+message("-- SDL Library was found")
 find_package(SDL2_image REQUIRED)
+message("-- SDL Image Library was found")
 include_directories(${SDL2_INCLUDE_DIRS})
 if(UNIX)
   include_directories(${SDL2_IMAGE_INCLUDE_DIR})
 else(UNIX)
   include_directories(${SDL2_IMAGE_INCLUDE_DIRS})
 endif(UNIX)
+
+# Qt config
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
+message("-- Qt5 Library was found")
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_INCLUDE_BINARY_DIR ON)
 
 # Move needed assets
 if (MSVC)
@@ -35,6 +45,6 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets
   DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 message("-- Copied all the assets")
 
-add_executable(main src/Simulation.cpp src/AI.cpp src/main.cpp)
+add_executable(main src/Simulation.cpp src/AI.cpp src/main.cpp src/WorkerThread.cpp)
 add_executable(run_tests tests/tests.cpp)
-target_link_libraries(main ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
+target_link_libraries(main ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} Qt5::Widgets)

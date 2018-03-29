@@ -14,6 +14,13 @@ move 1cm in up,down,left and right directions only.
 anything, the properties they should have is there posistion and to
 what agent it belongs to.
 
+# Design
+
+  * Create the Environment, which will setup its boundaries.
+  * It also create 5 agents with random locations within the boundaries.
+  * Then create 5 targets for each of the agents, total 25.
+  * Sent this to the frontend so it can render
+
 # Setup
 
 Read [SETUP.org](./docs/SETUP.org) to setup `SDL2` and `SDL2_image`
