@@ -33,13 +33,24 @@ class LTexture
 class Simulation : public QObject
 {
     Q_OBJECT
-public:
-    Simulation();
+   public:
+    Simulation(QObject* parent = 0) : QObject(parent)
+    {
+        // Initializes both objects as null, before each is assigned
+        // an SDL object.
+        gWindow   = NULL;
+        gRenderer = NULL;
+        Init();
+        loadTextures();
+        // Initialize renderer color, clear screen to white
+        SDL_RenderClear(gRenderer);
+        SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    }
     ~Simulation();
     void renderAgent(Point<int>, int);   // update/render agent
     void renderTarget(Point<int>, int);  // ipdate/render target
 
-private:
+   private:
     // Screen dimension constants
     const int kScreenWidth  = 1000;  // 640
     const int kScreenHeight = 1000;  // 480

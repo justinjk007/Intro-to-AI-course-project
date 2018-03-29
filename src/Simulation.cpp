@@ -110,19 +110,6 @@ int LTexture::getHeight()
     return mHeight;
 }
 
-Simulation::Simulation()
-{
-    // Initializes both objects as null, before each is assigned
-    // an SDL object.
-    gWindow   = NULL;
-    gRenderer = NULL;
-    Init();
-    loadTextures();
-    // Initialize renderer color, clear screen to white
-    SDL_RenderClear(gRenderer);
-    SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-}
-
 Simulation::~Simulation()
 {
     // Clean up objects

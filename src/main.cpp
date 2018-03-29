@@ -1,6 +1,5 @@
 #include <QObject>
 #include <QThread>
-#include <QWidget>
 #include <QtCore>
 #include <chrono>
 #include <thread>
@@ -12,9 +11,12 @@
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #endif
 
-int main()
+int main(int argc, char* argv[])
 {
-    Simulation world;  // Create the frontend
+    // Emitted types are registered here to make queued connections possible
+    qRegisterMetaType<Point<int>>("Point<int>");
+    QCoreApplication application(argc, argv);
+    Simulation* world = new Simulation(&application);  // Create the frontend
     /**
      * Here I am creating new thread for the backend and making a
      * backend thread connecting the worker thread and front-end. Then
@@ -25,8 +27,8 @@ int main()
     Worker* new_worker_obj = new Worker();
     new_worker_obj->moveToThread(worker_thread);
     // Prototype => connect(obj,signal,obj,slot)
-    QObject::connect(new_worker_obj, &Worker::renderAgent, &world, &Simulation::renderAgent);
-    QObject::connect(new_worker_obj, &Worker::renderTarget, &world, &Simulation::renderTarget);
+    QObject::connect(new_worker_obj, &Worker::renderAgent, world, &Simulation::renderAgent);
+    QObject::connect(new_worker_obj, &Worker::renderTarget, world, &Simulation::renderTarget);
     // Start the mainProcess when the worker thread is called
     QObject::connect(worker_thread, &QThread::started, new_worker_obj, &Worker::mainProcess);
     // Delete thread signals when they are finished --> Secure the future
@@ -36,14 +38,14 @@ int main()
     // Finally start the thread, and by that start the backend AI
     worker_thread->start();
 
-    SDL_Event Events;
-    bool run = true;
-    while (run) {
-        while (SDL_PollEvent(&Events)) {
-            if (Events.type == SDL_QUIT) run = false;
-       }
-    }
+    // SDL_Event Events;
+    // bool run = true;
+    // while (run) {
+    //     while (SDL_PollEvent(&Events)) {
+    //         if (Events.type == SDL_QUIT) run = false;
+    //     }
+    // }
 
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10000));
-    return 0;
+   // std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+    return application.exec();
 }
