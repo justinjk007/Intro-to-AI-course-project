@@ -2,6 +2,9 @@
 #include <ctime>
 #include <string>
 
+std::vector<Agent> g_agents;
+std::vector<Target> g_targets;
+
 // Initialize environment
 Environment::Environment()
 {
@@ -19,8 +22,8 @@ Environment::Environment()
         random[1] = floor + std::rand() / (RAND_MAX / ceiling + floor);
         Agent one(Point<int>(random[0], random[1]), 0);
         Target two(Point<int>(random[1], random[0]), 0);
-        this->agents.push_back(one);
-        this->targets.push_back(two);
+        g_agents.push_back(one);
+        g_targets.push_back(two);
         // Add a second loop here when you need more than 1 target per agent
     }
 }
@@ -31,12 +34,10 @@ void Environment::render()
      * Parse the locations and ids of each agent and target, then
      * update them one by one by calling the front signals
      */
-    for (auto it = this->agents.begin(); it != this->agents.end(); ++it) {
+    for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
         emit renderAgent(it->location, it->id);
     }
-    for (auto it = this->targets.begin(); it != this->targets.end(); ++it) {
+    for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
         emit renderTarget(it->location, it->id);
     }
 }
-
-void Agent::Update() {}

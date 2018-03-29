@@ -16,7 +16,11 @@ class Object
 class Target : public Object
 {
    public:
-    Target(Point<int> loc, int id) : Object(loc, id) {}
+    Target(Point<int> loc, int id) : Object(loc, id)
+    {
+        killed = true;
+    }
+    bool killed;
 };
 
 class Agent : public Object
@@ -37,10 +41,8 @@ class Environment : public QObject
     Q_OBJECT
    private:
     Point<int> boundaries[4];
-    std::vector<Agent> agents;
-    std::vector<Target> targets;
 
-   public:
+public:
     Environment();
     void render();
 
