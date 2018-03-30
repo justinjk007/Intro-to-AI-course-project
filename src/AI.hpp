@@ -31,7 +31,7 @@ class Agent : public Object
         targetsFound = 0;
     }
     int targetsFound;
-    void ScanArea();     // Identify Nearby objects
+    void ScanArea();  // Identify Nearby objects
     bool moveLeft();
     bool moveRight();
     bool moveDown();
@@ -41,15 +41,12 @@ class Agent : public Object
 class Environment : public QObject
 {
     Q_OBJECT
-   private:
-    Point<int> boundaries[4];
-
-public:
+   public:
     Environment();
     void render();
     void play();
 
-signals:
+   signals:
     void renderAgent(Point<int>, int);   // update/render agent
     void renderTarget(Point<int>, int);  // ipdate/render target
     void clearScreen();

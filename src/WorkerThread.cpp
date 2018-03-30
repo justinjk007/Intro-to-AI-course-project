@@ -17,12 +17,5 @@ void Worker::mainProcess()
 
     ai.render();
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-    // ai.render2();
-
     ai.play();
-    // FIXME: Commenting out both of these means no rendering...so the
-    // problem is somewhere in the render function, after it renders
-    // once it can render again ?
-
-    // Ok so render2 function 2 works
 }

@@ -1,6 +1,7 @@
 #include "AI.hpp"
 #include <chrono>
 #include <ctime>
+#include <functional>
 #include <iostream>
 #include <string>
 #include <thread>
@@ -11,23 +12,17 @@ std::vector<Target> g_targets;
 // Initialize environment
 Environment::Environment()
 {
-    boundaries[0] = Point<int>(0, 0);        // Top left corner
-    boundaries[1] = Point<int>(1000, 0);     // Top right corner
-    boundaries[2] = Point<int>(1000, 1000);  // Bottom right corner
-    boundaries[3] = Point<int>(0, 1000);     // Bottom left corner
-
     std::srand(std::time(nullptr));
-    int floor = 0, ceiling = 1000;  // Range of the random numbers generated
-    int random[2];
+    std::function<int()> rand = [=]() {
+        int floor = 0, ceiling = 1000;  // Range of the random number
+        return floor + std::rand() / (RAND_MAX / ceiling + floor);
+    };
+
     for (int i = 0; i < 1; ++i) {
-        random[0] = floor + std::rand() / (RAND_MAX / ceiling + floor);
-        random[1] = floor + std::rand() / (RAND_MAX / ceiling + floor);
-        // Agent one(Point<int>(random[0], random[1]), 0);
-        Agent one(Point<int>(0, 0), 0);
-        Target two(Point<int>(random[1], random[0]), 0);
+        Agent one(Point<int>(rand(), rand()), 0);
         g_agents.push_back(one);
+        Target two(Point<int>(rand(), rand()), 0);
         g_targets.push_back(two);
-        // Add a second loop here when you need more than 1 target per agent
     }
 }
 
