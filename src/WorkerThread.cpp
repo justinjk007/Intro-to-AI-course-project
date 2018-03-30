@@ -13,7 +13,17 @@ void Worker::mainProcess()
     // Connect signals
     connect(&ai, &Environment::renderAgent, this, &Worker::renderAgent);
     connect(&ai, &Environment::renderTarget, this, &Worker::renderTarget);
+    connect(&ai, &Environment::clearScreen, this, &Worker::clearScreen);
 
     ai.render();
-    ai.play();
+    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+    ai.clearScreen();
+    ai.render2();
+
+    // ai.play();
+    // FIXME: Commenting out both of these means no rendering...so the
+    // problem is somewhere in the render function, after it renders
+    // once it can render again ?
+
+    // Ok so render2 function 2 works
 }

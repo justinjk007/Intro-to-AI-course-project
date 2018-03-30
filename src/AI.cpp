@@ -1,6 +1,6 @@
 #include "AI.hpp"
-#include <ctime>
 #include <chrono>
+#include <ctime>
 #include <string>
 #include <thread>
 
@@ -16,7 +16,7 @@ Environment::Environment()
     boundaries[3] = Point<int>(0, 1000);     // Bottom left corner
 
     std::srand(std::time(nullptr));
-    int floor = 0, ceiling = 1000; // Range of the random numbers generated
+    int floor = 0, ceiling = 1000;  // Range of the random numbers generated
     int random[2];
     for (int i = 0; i < 1; ++i) {
         random[0] = floor + std::rand() / (RAND_MAX / ceiling + floor);
@@ -43,12 +43,26 @@ void Environment::render()
     }
 }
 
+void Environment::render2()
+{
+    /**
+     * Parse the locations and ids of each agent and target, then
+     * update them one by one by calling the front signals
+     */
+    for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
+        emit renderTarget(it->location, it->id);
+    }
+    for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
+        emit renderAgent(it->location, it->id);
+    }
+}
+
 void Environment::play()
 {
     for (int i = 0; i < 6; ++i) {
-	auto it = g_agents.begin();
+        auto it = g_agents.begin();
         it->canThenMoveRight();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         this->render();
     }
 }

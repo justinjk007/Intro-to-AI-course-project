@@ -42,13 +42,12 @@ class Simulation : public QObject
         gRenderer = NULL;
         Init();
         loadTextures();
-        // Initialize renderer color, clear screen to white
-        SDL_RenderClear(gRenderer);
-        SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+        clearScreen();
     }
     ~Simulation();
     void renderAgent(Point<int>, int);   // update/render agent
     void renderTarget(Point<int>, int);  // ipdate/render target
+    void clearScreen();
 
    private:
     // Screen dimension constants

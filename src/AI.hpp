@@ -49,11 +49,13 @@ class Environment : public QObject
 public:
     Environment();
     void render();
+    void render2();
     void play();
 
 signals:
     void renderAgent(Point<int>, int);   // update/render agent
     void renderTarget(Point<int>, int);  // ipdate/render target
+    void clearScreen();
 };
 
 #endif /* AI_HPP */

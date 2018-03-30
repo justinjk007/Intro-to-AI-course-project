@@ -29,6 +29,7 @@ int main(int argc, char* argv[])
     // Prototype => connect(obj,signal,obj,slot)
     QObject::connect(new_worker_obj, &Worker::renderAgent, world, &Simulation::renderAgent);
     QObject::connect(new_worker_obj, &Worker::renderTarget, world, &Simulation::renderTarget);
+    QObject::connect(new_worker_obj, &Worker::clearScreen, world, &Simulation::clearScreen);
     // Start the mainProcess when the worker thread is called
     QObject::connect(worker_thread, &QThread::started, new_worker_obj, &Worker::mainProcess);
     // Delete thread signals when they are finished --> Secure the future

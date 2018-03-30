@@ -131,8 +131,9 @@ bool Simulation::Init()
         success = false;
     } else {
         // Create window
-        gWindow = SDL_CreateWindow("AI, I guess ?", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                   kScreenWidth, kScreenHeight, SDL_WINDOW_SHOWN);
+        gWindow =
+            SDL_CreateWindow("AI, I guess ?", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                             kScreenWidth, kScreenHeight, SDL_WINDOW_SHOWN);
         if (gWindow == NULL) {
             printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
             success = false;
@@ -155,6 +156,15 @@ bool Simulation::Init()
         }
     }
     return success;
+}
+
+void Simulation::clearScreen()
+{
+    /**
+     * Clears the rendering window to a white background
+     */
+    SDL_RenderClear(this->gRenderer);
+    SDL_SetRenderDrawColor(this->gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 }
 
 void Simulation::renderAgent(Point<int> location, int id)
@@ -196,13 +206,13 @@ bool Simulation::loadTextures()
     std::string file_name;
     for (int i = 0; i < 5; ++i) {
         // Load agent texture
-        file_name = "assets/Agent" + std::to_string(i+1) + "_HD.png";
+        file_name = "assets/Agent" + std::to_string(i + 1) + "_HD.png";
         if (!this->AgentTexture[i].loadFromFile(file_name, gRenderer)) {
             printf("Failed to load Agent texture image!\n");
             return false;
         }
         // Load target (A1) texture
-        file_name = "assets/Target" + std::to_string(i+1) + "_HD.png";
+        file_name = "assets/Target" + std::to_string(i + 1) + "_HD.png";
         if (!this->TargetTexture[i].loadFromFile(file_name, gRenderer)) {
             printf("Failed to load Target A1 texture image!\n");
             return false;
