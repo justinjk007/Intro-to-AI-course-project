@@ -18,7 +18,7 @@ class Target : public Object
    public:
     Target(Point<int> loc, int id) : Object(loc, id)
     {
-        killed = true;
+        killed = false;
     }
     bool killed;
 };

@@ -18,11 +18,11 @@ Environment::Environment()
         return floor + std::rand() / (RAND_MAX / ceiling + floor);
     };
 
-    for (int i = 0; i < 1; ++i) {
-        Agent one(Point<int>(rand(), rand()), 0);
-        g_agents.push_back(one);
-        Target two(Point<int>(rand(), rand()), 0);
-        g_targets.push_back(two);
+    for (int i = 0; i < 5; ++i) {
+        g_agents.push_back(Agent(Point<int>(rand(), rand()), i));
+        for (int j = 0; j < 5; ++j) {
+            g_targets.push_back(Target(Point<int>(rand(), rand()), i));
+        }
     }
 }
 
@@ -33,11 +33,13 @@ void Environment::render()
      * update them one by one by calling the front signals
      */
     this->clearScreen();
+    // Render targets first so they are on top
+    for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
+        if (!it->killed)
+            emit renderTarget(it->location, it->id);  // Render if it has not been killed/collected
+    }
     for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
         emit renderAgent(it->location, it->id);
-    }
-    for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
-        emit renderTarget(it->location, it->id);
     }
 }
 
@@ -45,19 +47,19 @@ void Environment::play()
 {
     auto it = g_agents.begin();
     while (it->moveRight()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         this->render();
     }
     while (it->moveDown()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         this->render();
     }
     while (it->moveLeft()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         this->render();
     }
     while (it->moveUp()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         this->render();
     }
 }
