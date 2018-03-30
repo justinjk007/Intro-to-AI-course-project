@@ -19,13 +19,13 @@ class Point
     {
         return this->Y;
     }
-    T addX(int num)
+    void addX(int num)
     {
-        return this->X + num;
+        this->X += num;
     }
-    T addY(int num)
+    void addY(int num)
     {
-        return this->Y + num;
+        this->Y += num;
     }
 };
 

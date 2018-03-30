@@ -21,7 +21,8 @@ Environment::Environment()
     for (int i = 0; i < 1; ++i) {
         random[0] = floor + std::rand() / (RAND_MAX / ceiling + floor);
         random[1] = floor + std::rand() / (RAND_MAX / ceiling + floor);
-        Agent one(Point<int>(random[0], random[1]), 0);
+        // Agent one(Point<int>(random[0], random[1]), 0);
+        Agent one(Point<int>(0, 0), 0);
         Target two(Point<int>(random[1], random[0]), 0);
         g_agents.push_back(one);
         g_targets.push_back(two);
@@ -35,6 +36,7 @@ void Environment::render()
      * Parse the locations and ids of each agent and target, then
      * update them one by one by calling the front signals
      */
+    this->clearScreen();
     for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
         emit renderAgent(it->location, it->id);
     }
@@ -49,6 +51,7 @@ void Environment::render2()
      * Parse the locations and ids of each agent and target, then
      * update them one by one by calling the front signals
      */
+    this->clearScreen();
     for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
         emit renderTarget(it->location, it->id);
     }
@@ -59,15 +62,15 @@ void Environment::render2()
 
 void Environment::play()
 {
-    for (int i = 0; i < 6; ++i) {
-        auto it = g_agents.begin();
-        it->canThenMoveRight();
-        // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    auto it = g_agents.begin();
+    for (int i = 0; i < 100; ++i) {
+        it->moveRight();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         this->render();
     }
 }
 
-bool Agent::canThenMoveRight()
+bool Agent::moveRight()
 {
     if ((this->location.x() + 10) <= 1000) {
         this->location.addX(10);
@@ -76,7 +79,7 @@ bool Agent::canThenMoveRight()
         return false;
 }
 
-bool Agent::canThenMoveLeft()
+bool Agent::moveLeft()
 {
     if ((this->location.x() - 10) >= 0) {
         this->location.addX(-10);
@@ -85,7 +88,7 @@ bool Agent::canThenMoveLeft()
         return false;
 }
 
-bool Agent::canThenMoveDown()
+bool Agent::moveDown()
 {
     if ((this->location.y() + 10) <= 1000) {
         this->location.addY(10);
@@ -94,7 +97,7 @@ bool Agent::canThenMoveDown()
         return false;
 }
 
-bool Agent::canThenMoveUp()
+bool Agent::moveUp()
 {
     if ((this->location.y() - 10) >= 0) {
         this->location.addY(-10);

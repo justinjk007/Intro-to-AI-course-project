@@ -34,10 +34,10 @@ class Agent : public Object
     void Update();       // Perform Logic/Physics changes-movements
     void ScanArea();     // Identify Nearby objects
     void TargetFound();  // Increment targets found
-    bool canThenMoveLeft();
-    bool canThenMoveRight();
-    bool canThenMoveDown();
-    bool canThenMoveUp();
+    bool moveLeft();
+    bool moveRight();
+    bool moveDown();
+    bool moveUp();
 };
 
 class Environment : public QObject

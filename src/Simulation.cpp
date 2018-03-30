@@ -29,14 +29,13 @@ SDL_Texture* LTexture::create_texture_from_surface(SDL_Renderer* sdlRenderer, SD
         return NULL;
     }
     int pixelbytes = 0;
-    Uint8 r, g, b, a;
+    Uint8 r, g, b;
     SDL_Surface* cast_img = SDL_ConvertSurfaceFormat(surf, format, 0);
     pixelbytes            = cast_img->w * cast_img->h;
     pixelbytes            = pixelbytes * 4;
     unsigned char* pixels = (unsigned char*)cast_img->pixels;
     if (sdlColorKey != NULL) {
         for (int i = 0; i < pixelbytes; i++) {
-            a = pixels[i + 0];
             r = pixels[i + 1];
             g = pixels[i + 2];
             b = pixels[i + 3];
