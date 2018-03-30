@@ -174,11 +174,13 @@ void Simulation::renderAgent(Point<int> location, int id)
 
     // Render Agents
     // SDL_Rect controls how large the image is and where it is rendered
+    int offset = 50; // This offset is added to take care of the size
+		     // of the image so when it is draw kinda looks
+		     // like it is drawn from the center of the image
+		     // but it is draw from the top left corner.
     SDL_Rect agentSize;
-    agentSize.x = location.x();
-    agentSize.y = location.y();
-    // agentSize.w = this->AgentTexture[id].getWidth();
-    // agentSize.h = this->AgentTexture[id].getHeight();
+    agentSize.x = location.x() - offset;
+    agentSize.y = location.y() - offset;
     agentSize.w = 100;
     agentSize.h = 100;
     SDL_RenderCopy(gRenderer, this->AgentTexture[id].mTexture, 0, &agentSize);
@@ -192,8 +194,6 @@ void Simulation::renderTarget(Point<int> location, int id)
     SDL_Rect targetSize;
     targetSize.x = location.x();
     targetSize.y = location.y();
-    // targetSize.w = this->TargetTexture[id].getWidth();
-    // targetSize.h = this->TargetTexture[id].getHeight();
     targetSize.w = 10;
     targetSize.h = 10;
     SDL_RenderCopy(gRenderer, this->TargetTexture[id].mTexture, 0, &targetSize);

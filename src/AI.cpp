@@ -50,26 +50,26 @@ void Environment::play()
 {
     auto it = g_agents.begin();
     while (it->moveRight()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         this->render();
     }
     while (it->moveDown()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         this->render();
     }
     while (it->moveLeft()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         this->render();
     }
     while (it->moveUp()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         this->render();
     }
 }
 
 bool Agent::moveRight()
 {
-    if ((this->location.x() + 10) <= 900) {
+    if ((this->location.x() + 10) <= 1000) {
         this->location.addX(10);
         return true;
     } else
@@ -87,7 +87,7 @@ bool Agent::moveLeft()
 
 bool Agent::moveDown()
 {
-    if ((this->location.y() + 10) <= 900) {
+    if ((this->location.y() + 10) <= 1000) {
         this->location.addY(10);
         return true;
     } else
