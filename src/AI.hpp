@@ -29,9 +29,12 @@ class Agent : public Object
     Agent(Point<int> loc, int id) : Object(loc, id)
     {
         targetsFound = 0;
+        origin       = loc;
     }
     int targetsFound;
-    void ScanArea();  // Identify Nearby objects
+    Point<int> targetLocation;
+    Point<int> origin;
+    void scanAreaForTargets();
     bool moveLeft();
     bool moveRight();
     bool moveDown();
@@ -51,5 +54,7 @@ class Environment : public QObject
     void renderTarget(Point<int>, int);  // ipdate/render target
     void clearScreen();
 };
+
+double distance(Point<int>&, Point<int>&);  // Euclidean distance
 
 #endif /* AI_HPP */
