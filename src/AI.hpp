@@ -34,6 +34,10 @@ class Agent : public Object
     void Update();       // Perform Logic/Physics changes-movements
     void ScanArea();     // Identify Nearby objects
     void TargetFound();  // Increment targets found
+    bool canThenMoveLeft();
+    bool canThenMoveRight();
+    bool canThenMoveDown();
+    bool canThenMoveUp();
 };
 
 class Environment : public QObject
@@ -45,8 +49,9 @@ class Environment : public QObject
 public:
     Environment();
     void render();
+    void play();
 
-   signals:
+signals:
     void renderAgent(Point<int>, int);   // update/render agent
     void renderTarget(Point<int>, int);  // ipdate/render target
 };

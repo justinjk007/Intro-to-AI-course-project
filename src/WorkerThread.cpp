@@ -1,3 +1,5 @@
+#include <chrono>
+#include <thread>
 #include "WorkerThread.hpp"
 #include "AI.hpp"
 
@@ -13,4 +15,5 @@ void Worker::mainProcess()
     connect(&ai, &Environment::renderTarget, this, &Worker::renderTarget);
 
     ai.render();
+    ai.play();
 }

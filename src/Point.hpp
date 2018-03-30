@@ -19,6 +19,14 @@ class Point
     {
         return this->Y;
     }
+    T addX(T num)
+    {
+        return this->X + num;
+    }
+    T addY(T num)
+    {
+        return this->Y + num;
+    }
 };
 
 #endif /* POINT_HPP */

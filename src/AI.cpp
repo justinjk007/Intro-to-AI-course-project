@@ -1,6 +1,8 @@
 #include "AI.hpp"
 #include <ctime>
+#include <chrono>
 #include <string>
+#include <thread>
 
 std::vector<Agent> g_agents;
 std::vector<Target> g_targets;
@@ -13,9 +15,8 @@ Environment::Environment()
     boundaries[2] = Point<int>(1000, 1000);  // Bottom right corner
     boundaries[3] = Point<int>(0, 1000);     // Bottom left corner
 
-    // Get some random numbers for positions
     std::srand(std::time(nullptr));
-    int floor = 0, ceiling = 1000;
+    int floor = 0, ceiling = 1000; // Range of the random numbers generated
     int random[2];
     for (int i = 0; i < 1; ++i) {
         random[0] = floor + std::rand() / (RAND_MAX / ceiling + floor);
@@ -40,4 +41,50 @@ void Environment::render()
     for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
         emit renderTarget(it->location, it->id);
     }
+}
+
+void Environment::play()
+{
+    for (int i = 0; i < 6; ++i) {
+	auto it = g_agents.begin();
+        it->canThenMoveRight();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        this->render();
+    }
+}
+
+bool Agent::canThenMoveRight()
+{
+    if ((this->location.x() + 10) <= 1000) {
+        this->location.addX(10);
+        return true;
+    } else
+        return false;
+}
+
+bool Agent::canThenMoveLeft()
+{
+    if ((this->location.x() - 10) >= 0) {
+        this->location.addX(-10);
+        return true;
+    } else
+        return false;
+}
+
+bool Agent::canThenMoveDown()
+{
+    if ((this->location.y() + 10) <= 1000) {
+        this->location.addY(10);
+        return true;
+    } else
+        return false;
+}
+
+bool Agent::canThenMoveUp()
+{
+    if ((this->location.y() - 10) >= 0) {
+        this->location.addY(-10);
+        return true;
+    } else
+        return false;
 }
