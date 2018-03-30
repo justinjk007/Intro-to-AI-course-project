@@ -1,6 +1,8 @@
 #ifndef POINT_HPP
 #define POINT_HPP
 
+#include <ostream>
+
 template <typename T>
 class Point
 {
@@ -26,6 +28,11 @@ class Point
     void addY(int num)
     {
         this->Y += num;
+    }
+    friend std::ostream& operator<<(std::ostream& os, Point& p)
+    {
+        os << p.x() << ", " << p.y();
+        return os;
     }
 };
 

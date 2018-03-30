@@ -1,6 +1,7 @@
 #include "AI.hpp"
 #include <chrono>
 #include <ctime>
+#include <iostream>
 #include <string>
 #include <thread>
 
@@ -45,26 +46,22 @@ void Environment::render()
     }
 }
 
-void Environment::render2()
-{
-    /**
-     * Parse the locations and ids of each agent and target, then
-     * update them one by one by calling the front signals
-     */
-    this->clearScreen();
-    for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
-        emit renderTarget(it->location, it->id);
-    }
-    for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
-        emit renderAgent(it->location, it->id);
-    }
-}
-
 void Environment::play()
 {
     auto it = g_agents.begin();
-    for (int i = 0; i < 100; ++i) {
-        it->moveRight();
+    while (it->moveRight()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        this->render();
+    }
+    while (it->moveDown()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        this->render();
+    }
+    while (it->moveLeft()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        this->render();
+    }
+    while (it->moveUp()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         this->render();
     }
@@ -72,7 +69,7 @@ void Environment::play()
 
 bool Agent::moveRight()
 {
-    if ((this->location.x() + 10) <= 1000) {
+    if ((this->location.x() + 10) <= 900) {
         this->location.addX(10);
         return true;
     } else
@@ -90,7 +87,7 @@ bool Agent::moveLeft()
 
 bool Agent::moveDown()
 {
-    if ((this->location.y() + 10) <= 1000) {
+    if ((this->location.y() + 10) <= 900) {
         this->location.addY(10);
         return true;
     } else

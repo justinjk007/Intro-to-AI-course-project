@@ -31,9 +31,7 @@ class Agent : public Object
         targetsFound = 0;
     }
     int targetsFound;
-    void Update();       // Perform Logic/Physics changes-movements
     void ScanArea();     // Identify Nearby objects
-    void TargetFound();  // Increment targets found
     bool moveLeft();
     bool moveRight();
     bool moveDown();
@@ -49,7 +47,6 @@ class Environment : public QObject
 public:
     Environment();
     void render();
-    void render2();
     void play();
 
 signals:
