@@ -7,8 +7,9 @@
 
 enum Direction { left, right, up, down };
 
-double distance(Point<int>&, Point<int>&);  // Euclidean distance
-Direction rand(const int&, const int&);     // Returns random number
+double distance(Point<int>&, Point<int>&);           // Euclidean distance
+Direction rand(const int&, const int&);              // Returns random number
+Direction rand(const Direction&, const Direction&);  // Return random direction of the 2
 
 class Object
 {
@@ -39,22 +40,13 @@ class Agent : public Object
         origin         = loc;
         heading        = rand(1, 5);  // Get a randing heading
         if (heading == down)
-            next_step = left;
+            next_step = rand(left, right);
         else if (heading == up)
-            next_step = right;
+            next_step = rand(left, right);
         else if (heading == right)
-            next_step = up;
+            next_step = rand(down, up);
         else
-            next_step = down;
-	// FIXME: Enabling randomness breaks other agents ?
-        // if (heading == down)
-        //     next_step = rand(left,right);
-        // else if (heading == up)
-        //     next_step = rand(left,right);
-        // else if (heading == right)
-        //     next_step = rand(down,up);
-        // else
-        //     next_step = rand(down,up);
+            next_step = rand(down, up);
     }
     int targetsFound;
     Point<int> targetLocation;  // If any target location is know it will be in this variable
