@@ -4,6 +4,8 @@ std::vector<Agent> g_agents;
 std::vector<Target> g_targets;
 std::list<Target> public_channel;
 
+const int step_size = 50;  // How many distance each agent can cover in one step
+
 // Initialize environment
 Environment::Environment()
 {
@@ -23,8 +25,8 @@ Environment::Environment()
 void Environment::render()
 {
     /**
-     * Parse the locations and ids of each agent and target, then update them one
-     * by one by calling the front signals
+     * Parse the locations and ids of each agent and target, then update them one by one by calling
+     * the front signals
      */
     // Render targets first so they are on bottom
     // Started from the bottom now we here
@@ -53,8 +55,8 @@ void Environment::play()
 {
     while (true) {
         for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
-            // If the delay is considerably less than 50ms it will use
-            // more CPU and even make your system unresponsive
+            // WARNING!!! If the delay is considerably less than 50ms it will use more CPU and even
+            // make your system unresponsive
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
             it->update();  // make the agents next move
             this->render();
@@ -101,23 +103,23 @@ bool Agent::moveUp()
 void Agent::scanAreaForTargets()
 {
     /**
-     * If there are targets nearby mark them as killed, which will remove it from
-     * rendering. Also ++targetsFound of the agent.
+     * If there are targets nearby mark them as killed, which will remove it from rendering. Also
+     * ++targetsFound of the agent. Return false if nothing is collected
      */
     int radar_range = 55;
     for (auto it = g_targets.begin(); it != g_targets.end(); ++it)
         // If a target has the same id and is nearby get it
         if (it->id == this->id && distance(it->location, this->location) <= radar_range) {
             it->killed = true;
-            this->targetsFound++;
+            this->targets_found++;
         }
 }
 
 void Agent::checkForCollisions()
 {
     /**
-     * If there are any other agents nearby move away from them or do
-     * some maneuver to avoid collision
+     * If there are any other agents nearby move away from them or do some maneuver to avoid
+     * collision
      */
     int radar_range = 120;
     for (auto it = g_agents.begin(); it != g_agents.end(); ++it)
@@ -133,35 +135,63 @@ void Agent::checkForCollisions()
 void Agent::update()
 {
     /*
-     * Each agent gets a random heading direction so it knows which direction is
-     * it going in general and random next_step direction.(done during
-     * construction). If its heading down for example each next step will be left
-     * or right, until it can't move in that direction anymore then it will move
-     * one step in direction of heading and make the next_step to opposite
-     * direction. It moves right until it can't move down. Then it will go in the
-     * opposite direction(up) and move to the upper corners. Since agents never
-     * run out of fuel it does this over and over util one of the agents finds
-     * all the targets.
+     * Each agent gets a random heading direction so it knows which direction is it going in general
+     * and random next_step direction.(done during construction). If its heading down for example
+     * each next step will be left or right, until it can't move in that direction anymore then it
+     * will move one step in direction of heading and make the next_step to opposite direction. It
+     * moves right until it can't move down. Then it will go in the opposite direction(up) and move
+     * to the upper corners. Since agents never run out of fuel it does this over and over util one
+     * of the agents finds all the targets.
      */
 
-    // if target != Point(2000,2000) moveTowards(it)
-    // if target == Point(2000,2000) check if targets in channel, set it, use
-    // default movment for this anyways for this step
+    // Lambda storing the default_behavior
+    std::function<void()> default_behavior = [=]() {
+        if (move(this->next_step)) {
+            this->scanAreaForTargets();
+            this->checkForCollisions();
+        } else {
+            this->next_step = opposite(this->next_step);
+            if (!move(this->heading)) {
+                this->heading = opposite(this->heading);
+            } else {
+                // If can move check these
+                this->scanAreaForTargets();
+                this->checkForCollisions();
+            }
+        }
+    };
 
-    if (move(this->next_step)) {
-        this->scanAreaForTargets();
-        this->checkForCollisions();
-    } else {
-        this->next_step = opposite(this->next_step);
-        if (!move(this->heading)) this->heading = opposite(this->heading);
-    }
+    // Point<int>(2000,2000) is just some faulty point used for reference
+    // Point<int> nullpoint(2000, 2000);
+    // if (!compare(this->target_location, nullpoint)) {
+    //     // If valid target location is known move towards it
+    //     if (!moveTowards(target_location)) {
+    //         // If it can't move to that location then delete the target location
+    //         this->target_location = nullpoint;
+    //     }
+    //     this->scanAreaForTargets();
+    //     this->checkForCollisions();
+    // } else {
+    //     // Check if there is any known targets in the public channel
+    //     for (auto it = public_channel.begin(); it != public_channel.end(); ++it) {
+    //         if (it->id == this->id) {
+    //             // Thhis is our target so set it as target_location
+    //             this->target_location = it->location;
+    //             it                    = public_channel.erase(it);  // Remove from channel
+    //             default_behavior();                                // Move the default
+    //             way
+    //         } else
+    //             default_behavior();  // Move the default way
+    //     }
+    // }
+
+    default_behavior();  // Move the default way
 }
 
 bool Agent::move(const Direction& direction)
 {
     /**
-     * Move to the given direction if possible, return false if you can't move
-     * anymore.
+     * Move to the given direction if possible, return false if you can't move anymore.
      */
     switch (direction) {
         case left:
@@ -175,17 +205,23 @@ bool Agent::move(const Direction& direction)
     }
 }
 
-bool moveTowards(const Point<int>& destination)
+bool Agent::moveTowards(Point<int>& destination)
 {
     /**
-     * This method will try to move towards the given destination, if
-     * it can't it will return false.
+     * This method will try to move towards the given destination, if it can't it will return
+     * false.
      */
-
-    // Radar range for capturing objects is radar_range = 55;
-    // If targets location and agents location is in radar_range kill it and return false
-    // So if x of target is less that agent->location.x(), moveLeft, else moveRight, return there bool values
-    // If y of target is less that agent->location.y(), moveUp, else moveDown, return there bool values
+    int radar_range = 55;
+    if (distance(this->location, destination) <= radar_range)
+        return false;  // We are at the location so capturing is done in the update function
+    else if ((destination.x() - this->location.x()) < radar_range) {
+        return moveLeft();
+    } else if ((destination.x() - this->location.x()) > radar_range) {
+        return moveRight();
+    } else if ((destination.y() - this->location.y()) < radar_range) {
+        return moveUp();
+    } else
+        return moveDown();
 }
 
 bool compare(Point<int>& lhs, Point<int>& rhs)

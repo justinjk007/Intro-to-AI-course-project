@@ -14,8 +14,6 @@
 
 enum Direction { left, right, up, down };
 
-const int step_size = 50;  // How many distance each agent can cover in one step
-
 bool compare(Point<int>&, Point<int>&);              // Return true if both points are the same
 double distance(Point<int>&, Point<int>&);           // Euclidean distance
 Direction rand(const int&, const int&);              // Returns random number
@@ -45,11 +43,11 @@ class Agent : public Object
    public:
     Agent(Point<int> loc, int id) : Object(loc, id)
     {
-        targetsFound = 0;
+        targets_found = 0;
         // This means that there is no target location right now
-        targetLocation = Point<int>(2000, 2000);
-        origin         = loc;
-        heading        = rand(1, 5);  // Get a randing heading
+        target_location = Point<int>(2000, 2000);
+        origin          = loc;
+        heading         = rand(1, 5);  // Get a randing heading
         if (heading == down)
             next_step = rand(left, right);
         else if (heading == up)
@@ -59,16 +57,16 @@ class Agent : public Object
         else
             next_step = rand(down, up);
     }
-    int targetsFound;
-    Point<int> targetLocation;    // If any target location is know it will be in this variable
-    Point<int> origin;            // Where it was born
-    Direction heading;            // What direction its headed to
-    Direction next_step;          // Next step it has to take
-    void scanAreaForTargets();    // Collect targets if any
-    void checkForCollisions();    // Avoid collision b/w other agents
-    bool move(const Direction&);  // Move any given direction
-    void update();                // Make the next move, collect targets if any
-    bool moveTowards(const Point<int>&);  // Move towards this target point
+    int targets_found;
+    Point<int> target_location;     // If any target location is know it will be in this variable
+    Point<int> origin;              // Where it was born
+    Direction heading;              // What direction its headed to
+    Direction next_step;            // Next step it has to take
+    void scanAreaForTargets();      // Collect targets if any
+    void checkForCollisions();      // Avoid collision b/w other agents
+    bool move(const Direction&);    // Move any given direction
+    void update();                  // Make the next move, collect targets if any
+    bool moveTowards(Point<int>&);  // Move towards this target point
     bool moveLeft();
     bool moveRight();
     bool moveDown();
