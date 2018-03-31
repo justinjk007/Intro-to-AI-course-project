@@ -100,6 +100,7 @@ void Agent::scanAreaForTargets()
      */
     int radar_range = 50;
     for (auto it = g_targets.begin(); it != g_targets.end(); ++it)
+        // If a target has the same id and is nearby get it
         if (it->id == this->id && distance(it->location, this->location) <= radar_range) {
             it->killed = true;
             this->targetsFound++;
@@ -114,16 +115,18 @@ bool compare(Point<int> lhs, Point<int> rhs)
 void Agent::update()
 {
     // Lambda returns the opposite direction
-    std::function<Direction(Direction)> opposite = [=](Direction val) {
+    std::function<Direction(Direction)> opposite = [=](Direction direction) {
         // Return the opposite direction
-        if (val == left)
-            return right;
-        else if (val == right)
-            return left;
-        else if (val == up)
-            return down;
-        else
-            return up;
+        switch (direction) {
+            case left:
+                return right;
+            case right:
+                return left;
+            case down:
+                return up;
+            default:
+                return down;
+        }
     };
     /*
      * Each agent gets a random heading direction so it knows which
@@ -136,6 +139,7 @@ void Agent::update()
      * this over and over util one of the agents finds all the
      * targets.
      */
+
     if (move(this->next_step)) {
         this->scanAreaForTargets();
         // this->checkForCollisions();  // TODO: Implement this
@@ -145,21 +149,22 @@ void Agent::update()
     }
 }
 
-bool Agent::move(const Direction& val)
+bool Agent::move(const Direction& direction)
 {
     /**
      * Move to the given direction if possible, return false if you
      * can't move anymore.
      */
-    if (val == left)
-        // This will move left and return false if can't
-        return this->moveLeft();
-    else if (val == right)
-        return this->moveRight();
-    else if (val == up)
-        return this->moveUp();
-    else
-        return this->moveDown();
+    switch (direction) {
+        case left:
+            return this->moveLeft();
+        case right:
+            return this->moveRight();
+        case down:
+            return this->moveDown();
+        default:
+            return this->moveUp();
+    }
 }
 
 double distance(Point<int>& a, Point<int>& b)
@@ -178,14 +183,16 @@ Direction rand(const int& floor, const int& ceiling)
      * Return a random direction
      */
     int val = floor + std::rand() / (RAND_MAX / ceiling + floor);
-    if (val == 1)
-        return left;
-    else if (val == 2)
-        return right;
-    else if (val == 3)
-        return up;
-    else
-        return down;
+    switch (val) {
+        case 1:
+            return right;
+        case 2:
+            return left;
+        case 3:
+            return up;
+        default:
+            return down;
+    }
 }
 
 Direction rand(const Direction& a, const Direction& b)
