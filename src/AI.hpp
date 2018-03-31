@@ -6,12 +6,15 @@
 #include <cmath>
 #include <functional>
 #include <iostream>
+#include <list>
 #include <string>
 #include <thread>
 #include <vector>
 #include "Point.hpp"
 
 enum Direction { left, right, up, down };
+
+const int step_size = 50;  // How many distance each agent can cover in one step
 
 bool compare(Point<int>&, Point<int>&);              // Return true if both points are the same
 double distance(Point<int>&, Point<int>&);           // Euclidean distance
@@ -65,6 +68,7 @@ class Agent : public Object
     void checkForCollisions();    // Avoid collision b/w other agents
     bool move(const Direction&);  // Move any given direction
     void update();                // Make the next move, collect targets if any
+    bool moveTowards(const Point<int>&);  // Move towards this target point
     bool moveLeft();
     bool moveRight();
     bool moveDown();

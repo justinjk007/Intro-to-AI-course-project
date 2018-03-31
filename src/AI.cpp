@@ -2,7 +2,7 @@
 
 std::vector<Agent> g_agents;
 std::vector<Target> g_targets;
-const int step_size = 50;  // How many distance each agent can cover in one step
+std::list<Target> public_channel;
 
 // Initialize environment
 Environment::Environment()
@@ -12,7 +12,7 @@ Environment::Environment()
         return floor + std::rand() / (RAND_MAX / ceiling + floor);
     };
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 2; ++i) {
         g_agents.push_back(Agent(Point<int>(rand(), rand()), i));
         for (int j = 0; j < 5; ++j) {
             g_targets.push_back(Target(Point<int>(rand(), rand()), i));
@@ -44,7 +44,7 @@ void Environment::render()
         agent_loc.push_back(it->location);
         agent_id.push_back(it->id);
     }
-    emit clearScreen(); // Signal to clear the screen
+    emit clearScreen();  // Signal to clear the screen
     emit renderTarget(target_loc, target_id);
     emit renderAgent(agent_loc, agent_id);
 }
@@ -53,10 +53,10 @@ void Environment::play()
 {
     while (true) {
         for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
-	    // If the delay is considerably less than 50ms it will use
-	    // more CPU and even make your system unresponsive
+            // If the delay is considerably less than 50ms it will use
+            // more CPU and even make your system unresponsive
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            it->update(); // make the agents next move
+            it->update();  // make the agents next move
             this->render();
         }
     }
@@ -104,7 +104,7 @@ void Agent::scanAreaForTargets()
      * If there are targets nearby mark them as killed, which will remove it from
      * rendering. Also ++targetsFound of the agent.
      */
-    int radar_range = 50;
+    int radar_range = 55;
     for (auto it = g_targets.begin(); it != g_targets.end(); ++it)
         // If a target has the same id and is nearby get it
         if (it->id == this->id && distance(it->location, this->location) <= radar_range) {
@@ -143,6 +143,11 @@ void Agent::update()
      * run out of fuel it does this over and over util one of the agents finds
      * all the targets.
      */
+
+    // if target != Point(2000,2000) moveTowards(it)
+    // if target == Point(2000,2000) check if targets in channel, set it, use
+    // default movment for this anyways for this step
+
     if (move(this->next_step)) {
         this->scanAreaForTargets();
         this->checkForCollisions();
@@ -168,6 +173,19 @@ bool Agent::move(const Direction& direction)
         default:
             return this->moveUp();
     }
+}
+
+bool moveTowards(const Point<int>& destination)
+{
+    /**
+     * This method will try to move towards the given destination, if
+     * it can't it will return false.
+     */
+
+    // Radar range for capturing objects is radar_range = 55;
+    // If targets location and agents location is in radar_range kill it and return false
+    // So if x of target is less that agent->location.x(), moveLeft, else moveRight, return there bool values
+    // If y of target is less that agent->location.y(), moveUp, else moveDown, return there bool values
 }
 
 bool compare(Point<int>& lhs, Point<int>& rhs)
