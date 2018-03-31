@@ -18,7 +18,7 @@ Environment::Environment()
         return floor + std::rand() / (RAND_MAX / ceiling + floor);
     };
 
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 2; ++i) {
         g_agents.push_back(Agent(Point<int>(rand(), rand()), i));
         for (int j = 0; j < 5; ++j) {
             g_targets.push_back(Target(Point<int>(rand(), rand()), i));
@@ -46,28 +46,6 @@ void Environment::render()
 
 void Environment::play()
 {
-    // auto it = g_agents.begin();
-    // while (it->moveRight()) {
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    //     it->scanAreaForTargets();
-    //     this->render();
-    // }
-    // while (it->moveDown()) {
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    //     it->scanAreaForTargets();
-    //     this->render();
-    // }
-    // while (it->moveLeft()) {
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    //     it->scanAreaForTargets();
-    //     this->render();
-    // }
-    // while (it->moveUp()) {
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    //     it->scanAreaForTargets();
-    //     this->render();
-    // }
-
     while (true) {
         for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -122,7 +100,7 @@ void Agent::scanAreaForTargets()
      */
     int radar_range = 50;
     for (auto it = g_targets.begin(); it != g_targets.end(); ++it)
-        if (distance(it->location, this->location) <= radar_range) {
+        if (it->id == this->id && distance(it->location, this->location) <= radar_range) {
             it->killed = true;
             this->targetsFound++;
         }
@@ -208,4 +186,16 @@ Direction rand(const int& floor, const int& ceiling)
         return up;
     else
         return down;
+}
+
+Direction rand(const Direction& a, const Direction& b)
+{
+    /**
+     * Return a random direction of the two given ones
+     */
+    int val = 1 + std::rand() / (RAND_MAX / 2 + 1);
+    if (val == 1)
+        return a;
+    else
+        return b;
 }

@@ -46,6 +46,15 @@ class Agent : public Object
             next_step = up;
         else
             next_step = down;
+	// FIXME: Enabling randomness breaks other agents ?
+        // if (heading == down)
+        //     next_step = rand(left,right);
+        // else if (heading == up)
+        //     next_step = rand(left,right);
+        // else if (heading == right)
+        //     next_step = rand(down,up);
+        // else
+        //     next_step = rand(down,up);
     }
     int targetsFound;
     Point<int> targetLocation;  // If any target location is know it will be in this variable
