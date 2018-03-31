@@ -12,7 +12,7 @@ Environment::Environment()
         return floor + std::rand() / (RAND_MAX / ceiling + floor);
     };
 
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 5; ++i) {
         g_agents.push_back(Agent(Point<int>(rand(), rand()), i));
         for (int j = 0; j < 5; ++j) {
             g_targets.push_back(Target(Point<int>(rand(), rand()), i));
@@ -26,16 +26,27 @@ void Environment::render()
      * Parse the locations and ids of each agent and target, then update them one
      * by one by calling the front signals
      */
-    this->clearScreen();
     // Render targets first so they are on bottom
     // Started from the bottom now we here
+    std::vector<Point<int>> agent_loc;
+    std::vector<Point<int>> target_loc;
+    std::vector<int> agent_id;
+    std::vector<int> target_id;
+
     for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
-        if (!it->killed)
-            emit renderTarget(it->location, it->id);  // Render if it has not been killed/collected
+        if (!it->killed) {
+            // Add to render list if it not killed
+            target_loc.push_back(it->location);
+            target_id.push_back(it->id);
+        }
     }
     for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
-        emit renderAgent(it->location, it->id);
+        agent_loc.push_back(it->location);
+        agent_id.push_back(it->id);
     }
+    this->clearScreen(); // Signal to clear the screen
+    emit renderTarget(target_loc, target_id);
+    emit renderAgent(agent_loc, agent_id);
 }
 
 void Environment::play()

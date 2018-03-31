@@ -14,7 +14,8 @@
 int main(int argc, char* argv[])
 {
     // Emitted types are registered here to make queued connections possible
-    qRegisterMetaType<Point<int>>("Point<int>");
+    qRegisterMetaType<std::vector<Point<int>>>("std::vector<Point<int>>");
+    qRegisterMetaType<std::vector<int>>("std::vector<int>");
     QCoreApplication application(argc, argv);
     Simulation* world = new Simulation(&application);  // Create the frontend
     /**

@@ -80,8 +80,8 @@ class Environment : public QObject
     void play();
 
    signals:
-    void renderAgent(Point<int>, int);   // update/render agent
-    void renderTarget(Point<int>, int);  // update/render target
+    void renderAgent(std::vector<Point<int>>, std::vector<int>);   // update/render agent
+    void renderTarget(std::vector<Point<int>>, std::vector<int>);  // update/render target
     void clearScreen();
 };
 

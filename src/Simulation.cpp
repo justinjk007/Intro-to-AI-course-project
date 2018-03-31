@@ -166,7 +166,7 @@ void Simulation::clearScreen()
     SDL_SetRenderDrawColor(this->gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 }
 
-void Simulation::renderAgent(Point<int> location, int id)
+void Simulation::renderAgent(std::vector<Point<int>> location, std::vector<int> id)
 {
     // Draw things in order, so background first, then foreground
     // Anything not drawn to the back buffer will not be rendered
@@ -174,32 +174,44 @@ void Simulation::renderAgent(Point<int> location, int id)
 
     // Render Agents
     // SDL_Rect controls how large the image is and where it is rendered
-    int size   = 100;            // Size of the image/rectangle rendered
-    int offset = (int)size / 2;  // This offset is added to take care of the size
-                                 // of the image so when it is draw kinda looks
-                                 // like it is drawn from the center of the image
-                                 // but it is draw from the top left corner.
+    int size   = 100;              // Size of the image/rectangle rendered
+    int offset = (int)(size / 2);  // This offset is added to take care of the size
+                                   // of the image so when it is draw kinda looks
+                                   // like it is drawn from the center of the image
+                                   // but it is draw from the top left corner.
     SDL_Rect agent;
-    agent.x = location.x() - offset;
-    agent.y = location.y() - offset;
-    agent.w = size;
-    agent.h = size;
-    SDL_RenderCopy(gRenderer, this->AgentTexture[id].mTexture, 0, &agent);
+    agent.w  = size;
+    agent.h  = size;
+    auto it1 = location.begin();
+    auto it2 = id.begin();
+    for (; it1 != location.end();) {
+        agent.x = it1->x() - offset;
+        agent.y = it1->y() - offset;
+        SDL_RenderCopy(gRenderer, this->AgentTexture[*it2].mTexture, 0, &agent);
+        it1++;
+        it2++;
+    }
     SDL_RenderPresent(gRenderer);  // Update screen
 }
 
-void Simulation::renderTarget(Point<int> location, int id)
+void Simulation::renderTarget(std::vector<Point<int>> location, std::vector<int> id)
 {
     // Render Targets
     // SDL_Rect controls how large the image is and where it is rendered
     int size   = 10;  // Size of the image/rectangle rendered
-    int offset = (int)size / 2;
+    int offset = (int)(size / 2);
     SDL_Rect target;
-    target.x = location.x() - offset;
-    target.y = location.y() - offset;
     target.w = size;
     target.h = size;
-    SDL_RenderCopy(gRenderer, this->TargetTexture[id].mTexture, 0, &target);
+    auto it1 = location.begin();
+    auto it2 = id.begin();
+    for (; it1 != location.end();) {
+        target.x = it1->x() - offset;
+        target.y = it1->y() - offset;
+        SDL_RenderCopy(gRenderer, this->TargetTexture[*it2].mTexture, 0, &target);
+        it1++;
+        it2++;
+    }
     SDL_RenderPresent(gRenderer);  // Update screen
 }
 

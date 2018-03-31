@@ -5,8 +5,9 @@
 #include <SDL_image.h>
 #include <QObject>
 #include <string>
+#include <vector>
 #include "Point.hpp"
-#undef main
+#undef main // This is added to undefine the main() from SDL
 
 // Texture wrapper class
 class LTexture
@@ -21,7 +22,6 @@ class LTexture
     // Gets image dimensions
     int getWidth();
     int getHeight();
-
     SDL_Texture* mTexture;  // The actual hardware texture
 
    private:
@@ -45,8 +45,8 @@ class Simulation : public QObject
         clearScreen();
     }
     ~Simulation();
-    void renderAgent(Point<int>, int);   // update/render agent
-    void renderTarget(Point<int>, int);  // ipdate/render target
+    void renderAgent(std::vector<Point<int>>, std::vector<int>);   // update/render agent
+    void renderTarget(std::vector<Point<int>>, std::vector<int>);  // update/render target
     void clearScreen();
 
    private:
