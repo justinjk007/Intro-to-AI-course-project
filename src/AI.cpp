@@ -42,7 +42,7 @@ void Environment::play()
 {
     while (true) {
         for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
             it->update();
             this->render();
         }
@@ -100,9 +100,21 @@ void Agent::scanAreaForTargets()
         }
 }
 
-bool compare(Point<int> lhs, Point<int> rhs)
+void Agent::checkForCollisions()
 {
-    return (lhs.x() == rhs.x() && lhs.y() == rhs.y());
+    /**
+     * If there are any other agents nearby move away from them or do
+     * some maneuver to avoid collision
+     */
+    int radar_range = 70;
+    for (auto it = g_agents.begin(); it != g_agents.end(); ++it)
+        if (it->id != this->id && distance(it->location, this->location) <= radar_range) {
+            if (move(this->heading))
+                ;  // When collision is predicted take a step in the heading direction, if it can't
+                   // make that step move in the opposite direction of the heading direction
+            else
+                move(opposite(this->heading));
+        }
 }
 
 void Agent::update()
@@ -120,7 +132,7 @@ void Agent::update()
      */
     if (move(this->next_step)) {
         this->scanAreaForTargets();
-        // this->checkForCollisions();  // TODO: Implement this
+        this->checkForCollisions();  // TODO: Implement this
     } else {
         this->next_step = opposite(this->next_step);
         if (!move(this->heading)) this->heading = opposite(this->heading);
@@ -143,6 +155,14 @@ bool Agent::move(const Direction& direction)
         default:
             return this->moveUp();
     }
+}
+
+bool compare(Point<int>& lhs, Point<int>& rhs)
+{
+    /**
+     * Return true of both points are equal
+     */
+    return (lhs.x() == rhs.x() && lhs.y() == rhs.y());
 }
 
 double distance(Point<int>& a, Point<int>& b)
