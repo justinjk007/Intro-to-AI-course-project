@@ -106,7 +106,7 @@ void Agent::checkForCollisions()
      * If there are any other agents nearby move away from them or do
      * some maneuver to avoid collision
      */
-    int radar_range = 70;
+    int radar_range = 100;
     for (auto it = g_agents.begin(); it != g_agents.end(); ++it)
         if (it->id != this->id && distance(it->location, this->location) <= radar_range) {
             if (move(this->heading))

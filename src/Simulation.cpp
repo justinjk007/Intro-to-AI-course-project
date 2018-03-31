@@ -174,16 +174,17 @@ void Simulation::renderAgent(Point<int> location, int id)
 
     // Render Agents
     // SDL_Rect controls how large the image is and where it is rendered
-    int offset = 50; // This offset is added to take care of the size
-		     // of the image so when it is draw kinda looks
-		     // like it is drawn from the center of the image
-		     // but it is draw from the top left corner.
-    SDL_Rect agentSize;
-    agentSize.x = location.x() - offset;
-    agentSize.y = location.y() - offset;
-    agentSize.w = 100;
-    agentSize.h = 100;
-    SDL_RenderCopy(gRenderer, this->AgentTexture[id].mTexture, 0, &agentSize);
+    int size   = 100;            // Size of the image/rectangle rendered
+    int offset = (int)size / 2;  // This offset is added to take care of the size
+                                 // of the image so when it is draw kinda looks
+                                 // like it is drawn from the center of the image
+                                 // but it is draw from the top left corner.
+    SDL_Rect agent;
+    agent.x = location.x() - offset;
+    agent.y = location.y() - offset;
+    agent.w = size;
+    agent.h = size;
+    SDL_RenderCopy(gRenderer, this->AgentTexture[id].mTexture, 0, &agent);
     SDL_RenderPresent(gRenderer);  // Update screen
 }
 
@@ -191,12 +192,14 @@ void Simulation::renderTarget(Point<int> location, int id)
 {
     // Render Targets
     // SDL_Rect controls how large the image is and where it is rendered
-    SDL_Rect targetSize;
-    targetSize.x = location.x();
-    targetSize.y = location.y();
-    targetSize.w = 10;
-    targetSize.h = 10;
-    SDL_RenderCopy(gRenderer, this->TargetTexture[id].mTexture, 0, &targetSize);
+    int size   = 10;  // Size of the image/rectangle rendered
+    int offset = (int)size / 2;
+    SDL_Rect target;
+    target.x = location.x() - offset;
+    target.y = location.y() - offset;
+    target.w = size;
+    target.h = size;
+    SDL_RenderCopy(gRenderer, this->TargetTexture[id].mTexture, 0, &target);
     SDL_RenderPresent(gRenderer);  // Update screen
 }
 
