@@ -44,7 +44,7 @@ void Environment::render()
         agent_loc.push_back(it->location);
         agent_id.push_back(it->id);
     }
-    this->clearScreen(); // Signal to clear the screen
+    emit clearScreen(); // Signal to clear the screen
     emit renderTarget(target_loc, target_id);
     emit renderAgent(agent_loc, agent_id);
 }
@@ -53,8 +53,10 @@ void Environment::play()
 {
     while (true) {
         for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
+	    // If the delay is considerably less than 50ms it will use
+	    // more CPU and even make your system unresponsive
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            it->update();
+            it->update(); // make the agents next move
             this->render();
         }
     }
@@ -117,7 +119,7 @@ void Agent::checkForCollisions()
      * If there are any other agents nearby move away from them or do
      * some maneuver to avoid collision
      */
-    int radar_range = 100;
+    int radar_range = 120;
     for (auto it = g_agents.begin(); it != g_agents.end(); ++it)
         if (it->id != this->id && distance(it->location, this->location) <= radar_range) {
             if (move(this->heading))
@@ -143,7 +145,7 @@ void Agent::update()
      */
     if (move(this->next_step)) {
         this->scanAreaForTargets();
-        this->checkForCollisions();  // TODO: Implement this
+        this->checkForCollisions();
     } else {
         this->next_step = opposite(this->next_step);
         if (!move(this->heading)) this->heading = opposite(this->heading);

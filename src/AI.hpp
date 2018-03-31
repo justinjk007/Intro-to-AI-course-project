@@ -62,7 +62,7 @@ class Agent : public Object
     Direction heading;            // What direction its headed to
     Direction next_step;          // Next step it has to take
     void scanAreaForTargets();    // Collect targets if any
-    void checkForCollisions();    // TODO: Implement this
+    void checkForCollisions();    // Avoid collision b/w other agents
     bool move(const Direction&);  // Move any given direction
     void update();                // Make the next move, collect targets if any
     bool moveLeft();
