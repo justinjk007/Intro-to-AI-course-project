@@ -1,7 +1,6 @@
 #include "AI.hpp"
 #include <chrono>
 #include <cmath>
-#include <ctime>
 #include <functional>
 #include <iostream>
 #include <string>
@@ -9,11 +8,11 @@
 
 std::vector<Agent> g_agents;
 std::vector<Target> g_targets;
+const int step_size = 50;
 
 // Initialize environment
 Environment::Environment()
 {
-    std::srand(std::time(nullptr));
     std::function<int()> rand = [=]() {
         int floor = 0, ceiling = 1000;  // Range of the random number
         return floor + std::rand() / (RAND_MAX / ceiling + floor);
@@ -35,6 +34,7 @@ void Environment::render()
      */
     this->clearScreen();
     // Render targets first so they are on bottom
+    // Started from the bottom now we here
     for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
         if (!it->killed)
             emit renderTarget(it->location, it->id);  // Render if it has not been killed/collected
@@ -46,33 +46,41 @@ void Environment::render()
 
 void Environment::play()
 {
-    auto it = g_agents.begin();
-    while (it->moveRight()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	it->scanAreaForTargets();
-        this->render();
-    }
-    while (it->moveDown()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	it->scanAreaForTargets();
-        this->render();
-    }
-    while (it->moveLeft()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	it->scanAreaForTargets();
-        this->render();
-    }
-    while (it->moveUp()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	it->scanAreaForTargets();
-        this->render();
+    // auto it = g_agents.begin();
+    // while (it->moveRight()) {
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //     it->scanAreaForTargets();
+    //     this->render();
+    // }
+    // while (it->moveDown()) {
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //     it->scanAreaForTargets();
+    //     this->render();
+    // }
+    // while (it->moveLeft()) {
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //     it->scanAreaForTargets();
+    //     this->render();
+    // }
+    // while (it->moveUp()) {
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //     it->scanAreaForTargets();
+    //     this->render();
+    // }
+
+    while (true) {
+        for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            it->update();
+            this->render();
+        }
     }
 }
 
 bool Agent::moveRight()
 {
-    if ((this->location.x() + 10) <= 1000) {
-        this->location.addX(10);
+    if ((this->location.x() + step_size) <= 1000) {
+        this->location.addX(step_size);
         return true;
     } else
         return false;
@@ -80,8 +88,8 @@ bool Agent::moveRight()
 
 bool Agent::moveLeft()
 {
-    if ((this->location.x() - 10) >= 0) {
-        this->location.addX(-10);
+    if ((this->location.x() - step_size) >= 0) {
+        this->location.addX(-step_size);
         return true;
     } else
         return false;
@@ -89,8 +97,8 @@ bool Agent::moveLeft()
 
 bool Agent::moveDown()
 {
-    if ((this->location.y() + 10) <= 1000) {
-        this->location.addY(10);
+    if ((this->location.y() + step_size) <= 1000) {
+        this->location.addY(step_size);
         return true;
     } else
         return false;
@@ -98,8 +106,8 @@ bool Agent::moveDown()
 
 bool Agent::moveUp()
 {
-    if ((this->location.y() - 10) >= 0) {
-        this->location.addY(-10);
+    if ((this->location.y() - step_size) >= 0) {
+        this->location.addY(-step_size);
         return true;
     } else
         return false;
@@ -112,11 +120,68 @@ void Agent::scanAreaForTargets()
      * remove it from rendering. Also ++targetsFound of the
      * agent.
      */
+    int radar_range = 50;
     for (auto it = g_targets.begin(); it != g_targets.end(); ++it)
-        if (distance(it->location, this->location) <= 50) {
+        if (distance(it->location, this->location) <= radar_range) {
             it->killed = true;
             this->targetsFound++;
         }
+}
+
+bool compare(Point<int> lhs, Point<int> rhs)
+{
+    return (lhs.x() == rhs.x() && lhs.y() == rhs.y());
+}
+
+void Agent::update()
+{
+    // Lambda returns the opposite direction
+    std::function<Direction(Direction)> opposite = [=](Direction val) {
+        // Return the opposite direction
+        if (val == left)
+            return right;
+        else if (val == right)
+            return left;
+        else if (val == up)
+            return down;
+        else
+            return up;
+    };
+    /*
+     * Each agent gets a random heading direction so it knows which
+     * direction is it going in general. If its heading down for
+     * example each next step will be left until it can't move in that
+     * direction anymore then it will move in direction of heading and
+     * make the next_step to right. It moves right until it can't move
+     * down. Then it will go in the opposite direction(up) and move to
+     * the upper corners. Since agents never run out of fuel it does
+     * this over and over util one of the agents finds all the
+     * targets.
+     */
+    if (move(this->next_step)) {
+        this->scanAreaForTargets();
+        // this->checkForCollisions();  // TODO: Implement this
+    } else {
+        this->next_step = opposite(this->next_step);
+        if (!move(this->heading)) this->heading = opposite(this->heading);
+    }
+}
+
+bool Agent::move(const Direction& val)
+{
+    /**
+     * Move to the given direction if possible, return false if you
+     * can't move anymore.
+     */
+    if (val == left)
+        // This will move left and return false if can't
+        return this->moveLeft();
+    else if (val == right)
+        return this->moveRight();
+    else if (val == up)
+        return this->moveUp();
+    else
+        return this->moveDown();
 }
 
 double distance(Point<int>& a, Point<int>& b)
@@ -127,4 +192,20 @@ double distance(Point<int>& a, Point<int>& b)
     double diff_x = pow(b.x() - a.x(), 2);
     double diff_y = pow(b.y() - a.y(), 2);
     return sqrt(diff_y + diff_x);
+}
+
+Direction rand(const int& floor, const int& ceiling)
+{
+    /**
+     * Return a random direction
+     */
+    int val = floor + std::rand() / (RAND_MAX / ceiling + floor);
+    if (val == 1)
+        return left;
+    else if (val == 2)
+        return right;
+    else if (val == 3)
+        return up;
+    else
+        return down;
 }
