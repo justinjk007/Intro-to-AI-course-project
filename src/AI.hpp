@@ -2,6 +2,12 @@
 #define AI_HPP
 
 #include <QObject>
+#include <chrono>
+#include <cmath>
+#include <functional>
+#include <iostream>
+#include <string>
+#include <thread>
 #include <vector>
 #include "Point.hpp"
 
@@ -10,6 +16,7 @@ enum Direction { left, right, up, down };
 double distance(Point<int>&, Point<int>&);           // Euclidean distance
 Direction rand(const int&, const int&);              // Returns random number
 Direction rand(const Direction&, const Direction&);  // Return random direction of the 2
+Direction opposite(const Direction&);                // Return the opposite of the given direction
 
 class Object
 {

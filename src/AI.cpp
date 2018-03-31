@@ -1,14 +1,8 @@
 #include "AI.hpp"
-#include <chrono>
-#include <cmath>
-#include <functional>
-#include <iostream>
-#include <string>
-#include <thread>
 
 std::vector<Agent> g_agents;
 std::vector<Target> g_targets;
-const int step_size = 50;
+const int step_size = 50;  // How many distance each agent can cover in one step
 
 // Initialize environment
 Environment::Environment()
@@ -29,8 +23,8 @@ Environment::Environment()
 void Environment::render()
 {
     /**
-     * Parse the locations and ids of each agent and target, then
-     * update them one by one by calling the front signals
+     * Parse the locations and ids of each agent and target, then update them one
+     * by one by calling the front signals
      */
     this->clearScreen();
     // Render targets first so they are on bottom
@@ -94,9 +88,8 @@ bool Agent::moveUp()
 void Agent::scanAreaForTargets()
 {
     /**
-     * If there are targets nearby mark them as killed, which will
-     * remove it from rendering. Also ++targetsFound of the
-     * agent.
+     * If there are targets nearby mark them as killed, which will remove it from
+     * rendering. Also ++targetsFound of the agent.
      */
     int radar_range = 50;
     for (auto it = g_targets.begin(); it != g_targets.end(); ++it)
@@ -114,32 +107,17 @@ bool compare(Point<int> lhs, Point<int> rhs)
 
 void Agent::update()
 {
-    // Lambda returns the opposite direction
-    std::function<Direction(Direction)> opposite = [=](Direction direction) {
-        // Return the opposite direction
-        switch (direction) {
-            case left:
-                return right;
-            case right:
-                return left;
-            case down:
-                return up;
-            default:
-                return down;
-        }
-    };
     /*
-     * Each agent gets a random heading direction so it knows which
-     * direction is it going in general. If its heading down for
-     * example each next step will be left until it can't move in that
-     * direction anymore then it will move in direction of heading and
-     * make the next_step to right. It moves right until it can't move
-     * down. Then it will go in the opposite direction(up) and move to
-     * the upper corners. Since agents never run out of fuel it does
-     * this over and over util one of the agents finds all the
-     * targets.
+     * Each agent gets a random heading direction so it knows which direction is
+     * it going in general and random next_step direction.(done during
+     * construction). If its heading down for example each next step will be left
+     * or right, until it can't move in that direction anymore then it will move
+     * one step in direction of heading and make the next_step to opposite
+     * direction. It moves right until it can't move down. Then it will go in the
+     * opposite direction(up) and move to the upper corners. Since agents never
+     * run out of fuel it does this over and over util one of the agents finds
+     * all the targets.
      */
-
     if (move(this->next_step)) {
         this->scanAreaForTargets();
         // this->checkForCollisions();  // TODO: Implement this
@@ -152,8 +130,8 @@ void Agent::update()
 bool Agent::move(const Direction& direction)
 {
     /**
-     * Move to the given direction if possible, return false if you
-     * can't move anymore.
+     * Move to the given direction if possible, return false if you can't move
+     * anymore.
      */
     switch (direction) {
         case left:
@@ -205,4 +183,21 @@ Direction rand(const Direction& a, const Direction& b)
         return a;
     else
         return b;
+}
+
+Direction opposite(const Direction& direction)
+{
+    /**
+     * Returns the opposite direction of the given one
+     */
+    switch (direction) {
+        case left:
+            return right;
+        case right:
+            return left;
+        case down:
+            return up;
+        default:
+            return down;
+    }
 }
