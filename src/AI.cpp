@@ -14,7 +14,7 @@ Environment::Environment()
         return floor + std::rand() / (RAND_MAX / ceiling + floor);
     };
 
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 1; ++i) {
         g_agents.push_back(Agent(Point<int>(rand(), rand()), i));
         for (int j = 0; j < 5; ++j) {
             g_targets.push_back(Target(Point<int>(rand(), rand()), i));
@@ -58,7 +58,8 @@ void Environment::play()
             // WARNING!!! If the delay is considerably less than 50ms it will use more CPU and even
             // make your system unresponsive
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            it->update();  // make the agents next move
+            // it->update();  // make the agents next move
+            it->moveTowards(Point<int>(0, 0));
             this->render();
         }
     }
@@ -68,6 +69,7 @@ bool Agent::moveRight()
 {
     if ((this->location.x() + step_size) <= 1000) {
         this->location.addX(step_size);
+        std::cout << "right\n";
         return true;
     } else
         return false;
@@ -77,6 +79,7 @@ bool Agent::moveLeft()
 {
     if ((this->location.x() - step_size) >= 0) {
         this->location.addX(-step_size);
+        std::cout << "left\n";
         return true;
     } else
         return false;
@@ -86,6 +89,7 @@ bool Agent::moveDown()
 {
     if ((this->location.y() + step_size) <= 1000) {
         this->location.addY(step_size);
+        std::cout << "down\n";
         return true;
     } else
         return false;
@@ -95,6 +99,7 @@ bool Agent::moveUp()
 {
     if ((this->location.y() - step_size) >= 0) {
         this->location.addY(-step_size);
+        std::cout << "up\n";
         return true;
     } else
         return false;
@@ -121,9 +126,9 @@ void Agent::checkForCollisions()
      * If there are any other agents nearby move away from them or do some maneuver to avoid
      * collision
      */
-    int radar_range = 120;
+    int collision_range = 120;
     for (auto it = g_agents.begin(); it != g_agents.end(); ++it)
-        if (it->id != this->id && distance(it->location, this->location) <= radar_range) {
+        if (it->id != this->id && distance(it->location, this->location) <= collision_range) {
             if (move(this->heading))
                 ;  // When collision is predicted take a step in the heading direction, if it can't
                    // make that step move in the opposite direction of the heading direction
@@ -161,31 +166,27 @@ void Agent::update()
         }
     };
 
-    // Point<int>(2000,2000) is just some faulty point used for reference
-    // Point<int> nullpoint(2000, 2000);
-    // if (!compare(this->target_location, nullpoint)) {
-    //     // If valid target location is known move towards it
-    //     if (!moveTowards(target_location)) {
-    //         // If it can't move to that location then delete the target location
-    //         this->target_location = nullpoint;
-    //     }
-    //     this->scanAreaForTargets();
-    //     this->checkForCollisions();
-    // } else {
-    //     // Check if there is any known targets in the public channel
-    //     for (auto it = public_channel.begin(); it != public_channel.end(); ++it) {
-    //         if (it->id == this->id) {
-    //             // Thhis is our target so set it as target_location
-    //             this->target_location = it->location;
-    //             it                    = public_channel.erase(it);  // Remove from channel
-    //             default_behavior();                                // Move the default
-    //             way
-    //         } else
-    //             default_behavior();  // Move the default way
-    //     }
-    // }
-
-    default_behavior();  // Move the default way
+    Point<int> nullpoint(2000, 2000);
+    if (!compare(this->target_location, nullpoint)) {  // if target_location != nullpoint
+        // If valid target location is known move towards it
+        if (!moveTowards(target_location)) {
+            // If it can't move to that location then delete the target location
+            this->target_location = nullpoint;
+        }
+        this->scanAreaForTargets();
+        this->checkForCollisions();
+    } else {
+        // Check if there is any known targets in the public channel
+        for (auto it = public_channel.begin(); it != public_channel.end(); ++it) {
+            if (it->id == this->id) {
+                // This is our target so set it as target_location
+                this->target_location = it->location;
+                it                    = public_channel.erase(it);  // Remove from channel
+                default_behavior();                                // Make the default maneuver
+            } else
+                default_behavior();  // Make the default maneuver
+        }
+    }
 }
 
 bool Agent::move(const Direction& direction)
@@ -205,26 +206,31 @@ bool Agent::move(const Direction& direction)
     }
 }
 
-bool Agent::moveTowards(Point<int>& destination)
+bool Agent::moveTowards(Point<int> destination)
 {
     /**
-     * This method will try to move towards the given destination, if it can't it will return
-     * false.
+     * This method will try to move towards the given destination, if it can't it will return false.
      */
-    int radar_range = 55;
-    if (distance(this->location, destination) <= radar_range)
-        return false;  // We are at the location so capturing is done in the update function
-    else if ((destination.x() - this->location.x()) < radar_range) {
+    int radar_range = 50;
+    if ((distance(this->location, destination) <= radar_range)) {
+        std::cout << "Return here\n";
+        return false;  // We are at the location so return false forgetting about this location
+    }
+
+    if ((destination.x() - this->location.x()) < radar_range)
         return moveLeft();
-    } else if ((destination.x() - this->location.x()) > radar_range) {
+    else if ((destination.x() - this->location.x()) > radar_range)
         return moveRight();
-    } else if ((destination.y() - this->location.y()) < radar_range) {
+
+    if ((destination.y() - this->location.y()) < radar_range)
         return moveUp();
-    } else
+    else if ((destination.y() - this->location.y()) > radar_range)
         return moveDown();
+    else
+        return false;
 }
 
-bool compare(Point<int>& lhs, Point<int>& rhs)
+bool compare(Point<int> lhs, Point<int> rhs)
 {
     /**
      * Return true of both points are equal
@@ -232,7 +238,7 @@ bool compare(Point<int>& lhs, Point<int>& rhs)
     return (lhs.x() == rhs.x() && lhs.y() == rhs.y());
 }
 
-double distance(Point<int>& a, Point<int>& b)
+double distance(Point<int> a, Point<int> b)
 {
     /**
      * Return the euclidean distance between the points

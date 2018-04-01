@@ -14,8 +14,8 @@
 
 enum Direction { left, right, up, down };
 
-bool compare(Point<int>&, Point<int>&);              // Return true if both points are the same
-double distance(Point<int>&, Point<int>&);           // Euclidean distance
+bool compare(Point<int>, Point<int>);              // Return true if both points are the same
+double distance(Point<int>, Point<int>);           // Euclidean distance
 Direction rand(const int&, const int&);              // Returns random number
 Direction rand(const Direction&, const Direction&);  // Return random direction of the 2
 Direction opposite(const Direction&);                // Return the opposite of the given direction
@@ -66,7 +66,7 @@ class Agent : public Object
     void checkForCollisions();      // Avoid collision b/w other agents
     bool move(const Direction&);    // Move any given direction
     void update();                  // Make the next move, collect targets if any
-    bool moveTowards(Point<int>&);  // Move towards this target point
+    bool moveTowards(Point<int>);  // Move towards this target point
     bool moveLeft();
     bool moveRight();
     bool moveDown();
