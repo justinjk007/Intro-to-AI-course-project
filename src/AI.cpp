@@ -59,7 +59,7 @@ void Environment::play()
             // make your system unresponsive
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
             // it->update();  // make the agents next move
-            it->moveTowards(Point<int>(0, 0));
+            it->moveTowards(Point<int>(500, 500));
             this->render();
         }
     }
@@ -69,40 +69,48 @@ bool Agent::moveRight()
 {
     if ((this->location.x() + step_size) <= 1000) {
         this->location.addX(step_size);
-        std::cout << "right\n";
+        // std::cout << "right\n";
         return true;
-    } else
+    } else {
+        // std::cout << "can't move right\n";
         return false;
+    }
 }
 
 bool Agent::moveLeft()
 {
     if ((this->location.x() - step_size) >= 0) {
         this->location.addX(-step_size);
-        std::cout << "left\n";
+        // std::cout << "left\n";
         return true;
-    } else
+    } else {
+        // std::cout << "can't move left\n";
         return false;
+    }
 }
 
 bool Agent::moveDown()
 {
     if ((this->location.y() + step_size) <= 1000) {
         this->location.addY(step_size);
-        std::cout << "down\n";
+        // std::cout << "down\n";
         return true;
-    } else
+    } else {
+        // std::cout << "can't move down\n";
         return false;
+    }
 }
 
 bool Agent::moveUp()
 {
     if ((this->location.y() - step_size) >= 0) {
         this->location.addY(-step_size);
-        std::cout << "up\n";
+        // std::cout << "up\n";
         return true;
-    } else
+    } else {
+        // std::cout << "can't move up\n";
         return false;
+    }
 }
 
 void Agent::scanAreaForTargets()
@@ -211,23 +219,22 @@ bool Agent::moveTowards(Point<int> destination)
     /**
      * This method will try to move towards the given destination, if it can't it will return false.
      */
-    int radar_range = 50;
-    if ((distance(this->location, destination) <= radar_range)) {
-        std::cout << "Return here\n";
+    int radar_range = 10;
+    if ((distance(this->location, destination) < 50)) {
         return false;  // We are at the location so return false forgetting about this location
     }
 
-    if ((destination.x() - this->location.x()) < radar_range)
-        return moveLeft();
-    else if ((destination.x() - this->location.x()) > radar_range)
-        return moveRight();
-
-    if ((destination.y() - this->location.y()) < radar_range)
-        return moveUp();
-    else if ((destination.y() - this->location.y()) > radar_range)
-        return moveDown();
-    else
+    if ((destination.x() - this->location.x()) < radar_range && moveLeft())
+        return true;
+    else if ((destination.x() - this->location.x()) > radar_range && moveRight())
+        return true;
+    else if ((destination.y() - this->location.y()) < radar_range && moveUp())
+        return true;
+    else if ((destination.y() - this->location.y()) > radar_range && moveDown())
+        return true;
+    else {
         return false;
+    }
 }
 
 bool compare(Point<int> lhs, Point<int> rhs)
