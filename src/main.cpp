@@ -41,16 +41,16 @@ int main(int argc, char* argv[])
     worker_thread->start();
 
     auto timer = new QTimer(&application);
-    QObject::connect(timer, &QTimer::timeout, &application, [&application,world] {
+    QObject::connect(timer, &QTimer::timeout, &application, [&application, world] {
         SDL_Event Events;
         while (SDL_PollEvent(&Events)) {
-            if (Events.type == SDL_QUIT){
-		delete  world;
-		application.quit();
-	    }
+            if (Events.type == SDL_QUIT) {
+                delete world;
+                application.quit();
+            }
         }
     });
-    timer->start(); // Run this lamda every event loop
+    timer->start();  // Run this lamda every event loop
 
     // std::this_thread::sleep_for(std::chrono::milliseconds(10000));
     return application.exec();

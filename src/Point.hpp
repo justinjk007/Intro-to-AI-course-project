@@ -11,8 +11,12 @@ class Point
     T Y;
 
    public:
-    Point() : X(0), Y(0) {}
-    Point(T x_cord, T y_cord) : X(x_cord), Y(y_cord) {}
+    Point() : X(0), Y(0)
+    {
+    }
+    Point(T x_cord, T y_cord) : X(x_cord), Y(y_cord)
+    {
+    }
     T x()
     {
         return this->X;

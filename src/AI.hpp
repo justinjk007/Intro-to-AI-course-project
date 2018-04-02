@@ -23,7 +23,9 @@ Direction opposite(const Direction&);                // Return the opposite of t
 class Object
 {
    public:
-    Object(Point<int> loc, int id) : location(loc), id(id) {}
+    Object(Point<int> loc, int id) : location(loc), id(id)
+    {
+    }
     Point<int> location;
     int id;
 };
@@ -43,11 +45,9 @@ class Agent : public Object
    public:
     Agent(Point<int> loc, int id) : Object(loc, id)
     {
-        targets_found = 0;
-        // This means that there is no target location right now
-        target_location = Point<int>(2000, 2000);
-        origin          = loc;
-        heading         = rand(1, 5);  // Get a randing heading
+        targets_found   = 0;
+        target_location = Point<int>(2000, 2000);  // No target location when born
+        heading         = rand(1, 5);              // Get a randing heading
         if (heading == down)
             next_step = rand(left, right);
         else if (heading == up)
@@ -59,7 +59,6 @@ class Agent : public Object
     }
     int targets_found;
     Point<int> target_location;    // If any target location is know it will be in this variable
-    Point<int> origin;             // Where it was born
     Direction heading;             // What direction its headed to
     Direction next_step;           // Next step it has to take
     void scanAreaForTargets();     // Collect targets if any
