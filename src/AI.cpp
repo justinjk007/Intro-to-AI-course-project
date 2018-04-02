@@ -58,9 +58,8 @@ void Environment::play()
             // WARNING!!! If the delay is considerably less than 50ms it will use more CPU and even
             // make your system unresponsive
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            // it->update();  // make the agents next move
-            it->moveTowards(Point<int>(500, 500));
-            // FIXME: Moving to points in the middle seems to be breaking
+            it->update();  // make the agents next move
+            // it->moveTowards(Point<int>(500, 500));
             this->render();
         }
     }
@@ -85,7 +84,6 @@ bool Agent::moveRight(int x)
         return default_behavior();
     } else {
         int new_step_size = x - this->location.x();
-	std::cout << "moving in x: " << new_step_size << "\n";
         if (new_step_size <= step_size) {
             if ((this->location.x() + new_step_size) <= 1000) {
                 this->location.addX(new_step_size);
@@ -99,13 +97,31 @@ bool Agent::moveRight(int x)
     }
 }
 
-bool Agent::moveLeft()
+bool Agent::moveLeft(int x)
 {
-    if ((this->location.x() - step_size) >= 0) {
-        this->location.addX(-step_size);
-        return true;
+    std::function<bool()> default_behavior = [=]() {
+        if ((this->location.x() - step_size) >= 0) {
+            this->location.addX(-step_size);
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    if (x == 0) {  // Default
+        return default_behavior();
     } else {
-        return false;
+        int new_step_size = this->location.x() - x;
+        if (new_step_size <= step_size) {
+            if ((this->location.x() - new_step_size) >= 0) {
+                this->location.addX(-new_step_size);
+                return true;
+            } else {
+                return false;
+            }
+        } else {  // If the wanted step size is greater than usual step size
+            return default_behavior();
+        }
     }
 }
 
@@ -128,7 +144,6 @@ bool Agent::moveDown(int y)
         return default_behavior();
     } else {
         int new_step_size = y - this->location.y();
-        std::cout << "moving in y: " << new_step_size << "\n";
         if (new_step_size <= step_size) {
             if ((this->location.y() + new_step_size) <= 1000) {
                 this->location.addY(new_step_size);
@@ -142,13 +157,31 @@ bool Agent::moveDown(int y)
     }
 }
 
-bool Agent::moveUp()
+bool Agent::moveUp(int y)
 {
-    if ((this->location.y() - step_size) >= 0) {
-        this->location.addY(-step_size);
-        return true;
+    std::function<bool()> default_behavior = [=]() {
+        if ((this->location.y() - step_size) >= 0) {
+            this->location.addY(-step_size);
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    if (y == 0) {  // Default
+        return default_behavior();
     } else {
-        return false;
+        int new_step_size = this->location.y() - y;
+        if (new_step_size <= step_size) {
+            if ((this->location.y() - new_step_size) >= 0) {
+                this->location.addY(-new_step_size);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return default_behavior();
+        }
     }
 }
 
@@ -271,13 +304,15 @@ bool Agent::moveTowards(Point<int> destination)
                        // location
     }
 
-    else if ((destination.x() - this->location.x()) < xy_range && moveLeft())
+    int val1 = destination.x() - this->location.x();
+    int val2 = destination.y() - this->location.y();
+    if (val1 < xy_range && val1 != 0 && moveLeft(destination.x()))
         return true;
-    if ((destination.x() - this->location.x()) > xy_range && moveRight(destination.x()))
+    else if (val1 > xy_range && val1 != 0 && moveRight(destination.x()))
         return true;
-    else if ((destination.y() - this->location.y()) < xy_range && moveUp())
+    else if (val2 < xy_range && val2 != 0 && moveUp(destination.y()))
         return true;
-    else if ((destination.y() - this->location.y()) > xy_range && moveDown(destination.y()))
+    else if (val2 > xy_range && val2 != 0 && moveDown(destination.y()))
         return true;
     else {
         return false;  // It might be a fake point which agent can't reach so false

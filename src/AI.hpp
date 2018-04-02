@@ -67,10 +67,10 @@ class Agent : public Object
     bool move(const Direction&);   // Move any given direction
     void update();                 // Make the next move, collect targets if any
     bool moveTowards(Point<int>);  // Move towards this target point
-    bool moveLeft();
+    bool moveLeft(int x = 0);
     bool moveRight(int x = 0);
     bool moveDown(int y = 0);
-    bool moveUp();
+    bool moveUp(int y = 0);
 };
 
 class Environment : public QObject
