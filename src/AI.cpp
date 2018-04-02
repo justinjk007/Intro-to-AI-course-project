@@ -195,27 +195,29 @@ void Agent::update()
         }
     };
 
-    Point<int> nullpoint(2000, 2000);
-    if (!compare(this->target_location, nullpoint)) {  // if target_location != nullpoint
-        // If valid target location is known move towards it
-        if (!moveTowards(target_location)) {
-            // If it can't move to that location then delete the target location
-            this->target_location = nullpoint;
-        }
-        this->scanAreaForTargets();
-        this->checkForCollisions();
-    } else {
-        // Check if there is any known targets in the public channel
-        for (auto it = public_channel.begin(); it != public_channel.end(); ++it) {
-            if (it->id == this->id) {
-                // This is our target so set it as target_location
-                this->target_location = it->location;
-                it                    = public_channel.erase(it);  // Remove from channel
-                default_behavior();                                // Make the default maneuver
-            } else
-                default_behavior();  // Make the default maneuver
-        }
-    }
+    // Point<int> nullpoint(2000, 2000);
+    // if (!compare(this->target_location, nullpoint)) {  // if target_location != nullpoint
+    //     // If valid target location is known move towards it
+    //     if (!moveTowards(target_location)) {
+    //         // If it can't move to that location then delete the target location
+    //         this->target_location = nullpoint;
+    //     }
+    //     this->scanAreaForTargets();
+    //     this->checkForCollisions();
+    // } else {
+    //     // Check if there is any known targets in the public channel
+    //     for (auto it = public_channel.begin(); it != public_channel.end(); ++it) {
+    //         if (it->id == this->id) {
+    //             // This is our target so set it as target_location
+    //             this->target_location = it->location;
+    //             it                    = public_channel.erase(it);  // Remove from channel
+    //             default_behavior();                                // Make the default maneuver
+    //         } else
+    //             default_behavior();  // Make the default maneuver
+    //     }
+    // }
+
+    default_behavior();  // Make the default maneuver
 }
 
 bool Agent::move(const Direction& direction)
@@ -244,7 +246,6 @@ bool Agent::moveTowards(Point<int> destination)
     int radar_range = 50;
     int xy_range    = 50;
     if ((distance(this->location, destination) < radar_range)) {
-        std::cout << "Target reached\n";
         return false;  // We are at the location so return false forgetting about this
                        // location
     }
