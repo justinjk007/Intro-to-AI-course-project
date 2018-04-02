@@ -84,14 +84,16 @@ bool Agent::moveRight(int x)
     if (x == 0) {  // Default
         return default_behavior();
     } else {
-        if (x - this->location.x() <= step_size) {
-            if ((x <= 1000)) {
-                this->location.addX(x - this->location.x());
+        int new_step_size = x - this->location.x();
+	std::cout << "moving in x: " << new_step_size << "\n";
+        if (new_step_size <= step_size) {
+            if ((this->location.x() + new_step_size) <= 1000) {
+                this->location.addX(new_step_size);
                 return true;
             } else {
                 return false;
             }
-        } else {
+        } else {  // If the wanted step size is greater than usual step size
             return default_behavior();
         }
     }
@@ -113,11 +115,30 @@ bool Agent::moveDown(int y)
      * The parameter y is the destination y the agent is trying to reach so if moving to
      * that means making a move less than 50 units move to y
      */
-    if ((this->location.y() + step_size) <= 1000) {
-        this->location.addY(step_size);
-        return true;
+    std::function<bool()> default_behavior = [=]() {
+        if ((this->location.y() + step_size) <= 1000) {
+            this->location.addY(step_size);
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    if (y == 0) {  // Default
+        return default_behavior();
     } else {
-        return false;
+        int new_step_size = y - this->location.y();
+        std::cout << "moving in y: " << new_step_size << "\n";
+        if (new_step_size <= step_size) {
+            if ((this->location.y() + new_step_size) <= 1000) {
+                this->location.addY(new_step_size);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return default_behavior();
+        }
     }
 }
 
@@ -250,9 +271,9 @@ bool Agent::moveTowards(Point<int> destination)
                        // location
     }
 
-    if ((destination.x() - this->location.x()) < xy_range && moveLeft())
+    else if ((destination.x() - this->location.x()) < xy_range && moveLeft())
         return true;
-    else if ((destination.x() - this->location.x()) > xy_range && moveRight(destination.x()))
+    if ((destination.x() - this->location.x()) > xy_range && moveRight(destination.x()))
         return true;
     else if ((destination.y() - this->location.y()) < xy_range && moveUp())
         return true;
