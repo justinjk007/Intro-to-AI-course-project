@@ -66,15 +66,34 @@ void Environment::play()
     }
 }
 
-bool Agent::moveRight()
+bool Agent::moveRight(int x)
 {
-    if ((this->location.x() + step_size) <= 1000) {
-        this->location.addX(step_size);
-        std::cout << "right\n";
-        return true;
+    /**
+     * The parameter x is the destination x the agent is trying to reach so if moving to that means
+     * making a move less than 50 units move to x.
+     */
+    std::function<bool()> default_behavior = [=]() {
+        if ((this->location.x() + step_size) <= 1000) {
+            this->location.addX(step_size);
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    if (x == 0) {  // Default
+        return default_behavior();
     } else {
-        std::cout << "can't move right\n";
-        return false;
+        if (x - this->location.x() <= step_size) {
+            if ((x <= 1000)) {
+                this->location.addX(x - this->location.x());
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return default_behavior();
+        }
     }
 }
 
@@ -82,22 +101,22 @@ bool Agent::moveLeft()
 {
     if ((this->location.x() - step_size) >= 0) {
         this->location.addX(-step_size);
-        std::cout << "left\n";
         return true;
     } else {
-        std::cout << "can't move left\n";
         return false;
     }
 }
 
-bool Agent::moveDown()
+bool Agent::moveDown(int y)
 {
+    /**
+     * The parameter y is the destination y the agent is trying to reach so if moving to
+     * that means making a move less than 50 units move to y
+     */
     if ((this->location.y() + step_size) <= 1000) {
         this->location.addY(step_size);
-        std::cout << "down\n";
         return true;
     } else {
-        std::cout << "can't move down\n";
         return false;
     }
 }
@@ -106,10 +125,8 @@ bool Agent::moveUp()
 {
     if ((this->location.y() - step_size) >= 0) {
         this->location.addY(-step_size);
-        std::cout << "up\n";
         return true;
     } else {
-        std::cout << "can't move up\n";
         return false;
     }
 }
@@ -117,7 +134,8 @@ bool Agent::moveUp()
 void Agent::scanAreaForTargets()
 {
     /**
-     * If there are targets nearby mark them as killed, which will remove it from rendering. Also
+     * If there are targets nearby mark them as killed, which will remove it from rendering.
+     * Also
      * ++targetsFound of the agent. Return false if nothing is collected
      */
     int radar_range = 55;
@@ -139,8 +157,9 @@ void Agent::checkForCollisions()
     for (auto it = g_agents.begin(); it != g_agents.end(); ++it)
         if (it->id != this->id && distance(it->location, this->location) <= collision_range) {
             if (move(this->heading))
-                ;  // When collision is predicted take a step in the heading direction, if it can't
-                   // make that step move in the opposite direction of the heading direction
+                ;  // When collision is predicted take a step in the heading direction, if
+                   // it can't make that step move in the opposite direction of the heading
+                   // direction
             else
                 move(opposite(this->heading));
         }
@@ -149,13 +168,14 @@ void Agent::checkForCollisions()
 void Agent::update()
 {
     /*
-     * Each agent gets a random heading direction so it knows which direction is it going in general
-     * and random next_step direction.(done during construction). If its heading down for example
-     * each next step will be left or right, until it can't move in that direction anymore then it
-     * will move one step in direction of heading and make the next_step to opposite direction. It
-     * moves right until it can't move down. Then it will go in the opposite direction(up) and move
-     * to the upper corners. Since agents never run out of fuel it does this over and over util one
-     * of the agents finds all the targets.
+     * Each agent gets a random heading direction so it knows which direction is it going in
+     * general and random next_step direction.(done during construction). If its heading
+     * down for example each next step will be left or right, until it can't move in that
+     * direction anymore then it will move one step in direction of heading and make the
+     * next_step to opposite direction. It moves right until it can't move down. Then it
+     * will go in the opposite direction(up) and move to the upper corners. Since agents
+     * never run out of fuel it does this over and over util one of the agents finds all the
+     * targets.
      */
 
     // Lambda storing the default_behavior
@@ -218,25 +238,24 @@ bool Agent::move(const Direction& direction)
 bool Agent::moveTowards(Point<int> destination)
 {
     /**
-     * This method will try to move towards the given destination, if it can't it will return false.
+     * This method will try to move towards the given destination, if it can't it will
+     * return false.
      */
     int radar_range = 50;
-    int xy_range = 50;
+    int xy_range    = 50;
     if ((distance(this->location, destination) < radar_range)) {
         std::cout << "Target reached\n";
-        return false;  // We are at the location so return false forgetting about this location
+        return false;  // We are at the location so return false forgetting about this
+                       // location
     }
 
-    if ((destination.x() - this->location.x()) < xy_range && moveLeft()) {
-	std::cout << "left,mradar: " << destination.x() - this->location.x() << "\n";
-	return true;
-    } else if ((destination.x() - this->location.x()) > xy_range && moveRight()){
-	std::cout << "right,radar: " << destination.x() - this->location.x() << "\n";
-	return true;
-    }
+    if ((destination.x() - this->location.x()) < xy_range && moveLeft())
+        return true;
+    else if ((destination.x() - this->location.x()) > xy_range && moveRight(destination.x()))
+        return true;
     else if ((destination.y() - this->location.y()) < xy_range && moveUp())
         return true;
-    else if ((destination.y() - this->location.y()) > xy_range && moveDown())
+    else if ((destination.y() - this->location.y()) > xy_range && moveDown(destination.y()))
         return true;
     else {
         return false;  // It might be a fake point which agent can't reach so false

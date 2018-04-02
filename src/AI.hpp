@@ -14,8 +14,8 @@
 
 enum Direction { left, right, up, down };
 
-bool compare(Point<int>, Point<int>);              // Return true if both points are the same
-double distance(Point<int>, Point<int>);           // Euclidean distance
+bool compare(Point<int>, Point<int>);                // Return true if both points are the same
+double distance(Point<int>, Point<int>);             // Euclidean distance
 Direction rand(const int&, const int&);              // Returns random number
 Direction rand(const Direction&, const Direction&);  // Return random direction of the 2
 Direction opposite(const Direction&);                // Return the opposite of the given direction
@@ -58,18 +58,18 @@ class Agent : public Object
             next_step = rand(down, up);
     }
     int targets_found;
-    Point<int> target_location;     // If any target location is know it will be in this variable
-    Point<int> origin;              // Where it was born
-    Direction heading;              // What direction its headed to
-    Direction next_step;            // Next step it has to take
-    void scanAreaForTargets();      // Collect targets if any
-    void checkForCollisions();      // Avoid collision b/w other agents
-    bool move(const Direction&);    // Move any given direction
-    void update();                  // Make the next move, collect targets if any
+    Point<int> target_location;    // If any target location is know it will be in this variable
+    Point<int> origin;             // Where it was born
+    Direction heading;             // What direction its headed to
+    Direction next_step;           // Next step it has to take
+    void scanAreaForTargets();     // Collect targets if any
+    void checkForCollisions();     // Avoid collision b/w other agents
+    bool move(const Direction&);   // Move any given direction
+    void update();                 // Make the next move, collect targets if any
     bool moveTowards(Point<int>);  // Move towards this target point
     bool moveLeft();
-    bool moveRight();
-    bool moveDown();
+    bool moveRight(int x = 0);
+    bool moveDown(int y = 0);
     bool moveUp();
 };
 
