@@ -60,6 +60,7 @@ void Environment::play()
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
             // it->update();  // make the agents next move
             it->moveTowards(Point<int>(500, 500));
+	    // FIXME: Moving to points in the middle seems to be breaking
             this->render();
         }
     }
@@ -219,7 +220,7 @@ bool Agent::moveTowards(Point<int> destination)
     /**
      * This method will try to move towards the given destination, if it can't it will return false.
      */
-    int radar_range = 10;
+    int radar_range = 50;
     if ((distance(this->location, destination) < 50)) {
         return false;  // We are at the location so return false forgetting about this location
     }
