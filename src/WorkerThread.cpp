@@ -1,5 +1,6 @@
 #include <chrono>
 #include <thread>
+#include <ctime>
 #include "WorkerThread.hpp"
 #include "AI.hpp"
 
