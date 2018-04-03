@@ -16,7 +16,7 @@ Environment::Environment()
         return floor + std::rand() / (RAND_MAX / ceiling + floor);
     };
 
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 5; ++i) {
         g_agents.push_back(Agent(Point<int>(rand(), rand()), i));
         for (int j = 0; j < 5; ++j) {
             g_targets.push_back(Target(Point<int>(rand(), rand()), i));
@@ -267,34 +267,31 @@ void Agent::update()
         }
     };
 
-    // FIXME
-    // Point<int> nullpoint(2000, 2000);
-    // if (!compare(this->target_location, nullpoint)) {  // if target_location != nullpoint
-    //     if (!moveTowards(target_location)) {           // If valid target location is known move
-    //                                                    // towards it
-    //         this->target_location = nullpoint;         // If it can't move here then delete it
-    //     }
-    //     this->scanAreaForTargets();
-    //     this->checkForCollisions();
-    // } else {
-    //     // Check if there is any known targets in the public channel
-    //     if (!public_channel.empty()) {
-    //         auto it = public_channel.begin();
-    //         for (; it != public_channel.end();) {
-    //             if (it->id == this->id) {
-    //                 this->target_location = it->location;              // Set it as new target
-    //                 it                    = public_channel.erase(it);  // Remove from channel
-    //                 default_behavior();                                // Do the default maneuver
-    //             } else {
-    //                 ++it;
-    //             }
-    //         }
-    //         default_behavior();  // We did't find any targets so do the default
-    //     } else
-    //         default_behavior();  // Do the default maneuver
-    // }
-
-    default_behavior();  // Do the default maneuver
+    Point<int> nullpoint(2000, 2000);
+    if (!compare(this->target_location, nullpoint)) {  // if target_location != nullpoint
+        if (!moveTowards(target_location)) {           // If valid target location is known move
+                                                       // towards it
+            this->target_location = nullpoint;         // If it can't move here then delete it
+        }
+        this->scanAreaForTargets();
+        this->checkForCollisions();
+    } else {
+        // Check if there is any known targets in the public channel
+        if (!public_channel.empty()) {
+            auto it = public_channel.begin();
+            for (; it != public_channel.end();) {
+                if (it->id == this->id) {
+                    this->target_location = it->location;              // Set it as new target
+                    it                    = public_channel.erase(it);  // Remove from channel
+                    default_behavior();                                // Do the default maneuver
+                } else {
+                    ++it;
+                }
+            }
+            default_behavior();  // We did't find any targets so do the default
+        } else
+            default_behavior();  // Do the default maneuver
+    }
 }
 
 bool Agent::move(const Direction& direction)
