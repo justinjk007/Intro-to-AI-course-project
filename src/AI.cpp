@@ -111,10 +111,50 @@ void Environment::writeToFile()
     /**
      * Write iteration data to file appending it in csv format
      */
-    for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
-        std::cout << "Agent: " << it->id << " collected " << it->targets_found << " targets\n";
-        std::cout << "Agent: " << it->id << " made " << it->moves_made << " moves\n";
+    int happiness[5]       = {0};
+    int competitiveness[5] = {0};
+    double happiness_sum   = 0;  // Sum
+    double happiness_ave   = 0;  // Mean
+    double happiness_sd    = 0;  // Standard Deviation
+    double happiness_max   = 0;  // Maximum happiness
+    double happiness_min   = 0;  // Minimum happiness
+
+    // Calculate happiness stuff for all agents
+    {
+        auto it = g_agents.begin();
+        int i   = 0;
+        for (; it != g_agents.end();) {
+            happiness[i] = it->targets_found / (it->moves_made + 1);
+            happiness_sum += happiness[i];
+            it++;
+            i++;
+        }
     }
+    happiness_ave             = happiness_sum / 5;
+    happiness_min             = *std::min_element(happiness, happiness + 5);
+    happiness_max             = *std::max_element(happiness, happiness + 5);
+    double happiness_variance = 0;
+    for (int i = 0; i < 5; i++) {
+        happiness_variance += (happiness[i] - happiness_ave) * (happiness[i] - happiness_ave);
+    }
+    happiness_variance /= 5;
+    happiness_sd = sqrt(happiness_variance);
+
+    for (int i = 0; i < 5; i++) {
+        competitiveness[i] = (happiness[i] - happiness_min) / (happiness_max - happiness_min);
+    }
+
+    std::ofstream file;
+    file.open("G16_1.csv", std::ios_base::app);
+    // "Scene, Iteration, Agent, Targets collected, Steps, Happiness, Max Happ, Min Happ, Ave Happ,
+    // Standard Dev happiness, Agent competitiveness\n"
+    for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
+        file << this->scenario << "," << this->iteration << "," << it->id << ","
+             << it->targets_found << "," << it->moves_made << "," << happiness[it->id] << ","
+             << happiness_max << "," << happiness_min << "," << happiness_ave << "," << happiness_sd
+             << "," << competitiveness[it->id] << "\n";
+    }
+    file.close();
 }
 
 bool Agent::moveRight(int x)

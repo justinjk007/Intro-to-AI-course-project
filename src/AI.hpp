@@ -2,8 +2,10 @@
 #define AI_HPP
 
 #include <QObject>
+#include <algorithm>  // std::min_element, std::max_element
 #include <chrono>
 #include <cmath>
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <list>

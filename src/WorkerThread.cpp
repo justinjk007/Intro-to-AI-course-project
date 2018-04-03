@@ -18,12 +18,11 @@ void Worker::mainProcess()
     connect(&ai, &Environment::renderTarget, this, &Worker::renderTarget);
     connect(&ai, &Environment::clearScreen, this, &Worker::clearScreen);
 
-    for (int i = 1; i < 26; i++) {  // Here i is the number of iteration
+    for (int i = 1; i < 26; i++) {  // Here i is the number of iteration, for 25 iterations
         ai.initializeEnvironment();
         ai.render();
         ai.iteration = i;
         ai.play(1);
-	std::cout<<"Done\n";
         ai.writeToFile();
         ai.clearGlobals();
     }
