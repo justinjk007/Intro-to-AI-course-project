@@ -16,8 +16,9 @@ enum Direction { left, right, up, down };
 
 bool compare(Point<int>, Point<int>);                // Return true if both points are the same
 double distance(Point<int>, Point<int>);             // Euclidean distance
-Direction rand(const int&, const int&);              // Returns random number
+Direction rand(const int&, const int&);              // Returns random number b/w the given
 Direction rand(const Direction&, const Direction&);  // Return random direction of the 2
+bool rand_3_by_4();                                  // To lie or not to lie
 Direction opposite(const Direction&);                // Return the opposite of the given direction
 
 class Object
@@ -45,9 +46,10 @@ class Agent : public Object
    public:
     Agent(Point<int> loc, int id) : Object(loc, id)
     {
-        targets_found   = 0;
-        target_location = Point<int>(2000, 2000);  // No target location when born
-        heading         = rand(1, 5);              // Get a randing heading
+        targets_found       = 0;
+        target_location     = Point<int>(2000, 2000);  // No target location when born
+        last_broadcast_time = std::chrono::steady_clock::now();
+        heading             = rand(1, 5);  // Get a randing heading
         if (heading == down)
             next_step = rand(left, right);
         else if (heading == up)
@@ -58,7 +60,8 @@ class Agent : public Object
             next_step = rand(down, up);
     }
     int targets_found;
-    Point<int> target_location;    // If any target location is know it will be in this variable
+    Point<int> target_location;  // If any target location is know it will be in this variable
+    std::chrono::steady_clock::time_point last_broadcast_time;
     Direction heading;             // What direction its headed to
     Direction next_step;           // Next step it has to take
     void scanAreaForTargets();     // Collect targets if any
