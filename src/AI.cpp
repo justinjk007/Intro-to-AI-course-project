@@ -4,13 +4,17 @@ std::vector<Agent> g_agents;
 std::vector<Target> g_targets;
 std::list<Target> public_channel;
 
-const int step_size             = 50;   // How many distance each agent can cover in one step
+const int step_size             = 50;  // How many distance each agent can cover in one step
 const int delay_after_each_step = 50;  // WARNING!!! If the delay is considerably less than 50ms it
-                                        // will use more CPU and even make your system unresponsive
+                                       // will use more CPU and even make your system unresponsive
 
 // Initialize environment
-Environment::Environment()
+void Environment::initializeEnvironment()
 {
+    /**
+     * This method is used instead of a constructor because we have to use the same environemnt for
+     * multiple iterations and this means the connection b/w the front end is not killed
+     */
     std::function<int()> rand = [=]() {
         int floor = 0, ceiling = 1000;  // Range of the random number
         return floor + std::rand() / (RAND_MAX / ceiling + floor);
@@ -56,12 +60,60 @@ void Environment::render()
 void Environment::play(const int& scene)
 {
     this->scenario = scene;
-    while (true) {
-        for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(delay_after_each_step));
-            it->update();  // make the agents next move
-            this->render();
+    if (scene == 1) {
+        while (true) {
+            for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
+                it->update1();     // Make the agents next move
+                it->moves_made++;  // Count the current move
+                this->render();
+                std::this_thread::sleep_for(std::chrono::milliseconds(delay_after_each_step));
+                if (it->targets_found == 5) return;
+            }
         }
+    } else if (scene == 2) {
+        while (true) {
+            for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
+                it->update2();     // Make the agents next move
+                it->moves_made++;  // Count the current move
+                this->render();
+                std::this_thread::sleep_for(std::chrono::milliseconds(delay_after_each_step));
+                bool win = true;
+                for (auto itt = g_agents.begin(); itt != g_agents.end(); ++itt) {
+                    win = win &&
+                          (itt->targets_found == 5);  // Check if all the agents found there target
+                }
+                if (win) return;
+            }
+        }
+    } else {  // Scenario 3
+        for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
+            it->update3();     // Make the agents next move
+            it->moves_made++;  // Count the current move
+            this->render();
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay_after_each_step));
+            if (it->targets_found == 5) return;
+        }
+    }
+}
+
+void Environment::clearGlobals()
+{
+    /**
+     * This fucntion will clear the globals before the next iteration
+     */
+    g_agents.clear();        // clear vector
+    g_targets.clear();       // clear vector
+    public_channel.clear();  // clear list
+}
+
+void Environment::writeToFile()
+{
+    /**
+     * Write iteration data to file appending it in csv format
+     */
+    for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
+        std::cout << "Agent: " << it->id << " collected " << it->targets_found << " targets\n";
+        std::cout << "Agent: " << it->id << " made " << it->moves_made << " moves\n";
     }
 }
 
@@ -185,7 +237,7 @@ bool Agent::moveUp(int y)
     }
 }
 
-void Agent::scanAreaForTargets()
+void Agent::scanAreaForTargets1()
 {
     /**
      * If there are targets nearby mark them as killed, which will remove it from rendering.
@@ -220,13 +272,21 @@ void Agent::scanAreaForTargets()
     }
 }
 
+void Agent::scanAreaForTargets2()
+{
+}
+
+void Agent::scanAreaForTargets3()
+{
+}
+
 void Agent::checkForCollisions()
 {
     /**
      * If there are any other agents nearby move away from them or do some maneuver
      * to avoid collision
      */
-    int collision_range = 120;
+    int collision_range = 50;
     for (auto it = g_agents.begin(); it != g_agents.end(); ++it)
         if (it->id != this->id && distance(it->location, this->location) <= collision_range) {
             if (move(this->heading))
@@ -238,7 +298,7 @@ void Agent::checkForCollisions()
         }
 }
 
-void Agent::update()
+void Agent::update1()
 {
     /*
      * Each agent gets a random heading direction so it knows which direction is it
@@ -254,7 +314,7 @@ void Agent::update()
     // Lambda storing the default_behavior
     std::function<void()> default_behavior = [=]() {
         if (move(this->next_step)) {
-            this->scanAreaForTargets();
+            this->scanAreaForTargets1();
             this->checkForCollisions();
         } else {
             this->next_step = opposite(this->next_step);
@@ -262,7 +322,7 @@ void Agent::update()
                 this->heading = opposite(this->heading);
             } else {
                 // If can move check these
-                this->scanAreaForTargets();
+                this->scanAreaForTargets1();
                 this->checkForCollisions();
             }
         }
@@ -274,7 +334,7 @@ void Agent::update()
                                                        // towards it
             this->target_location = nullpoint;         // If it can't move here then delete it
         }
-        this->scanAreaForTargets();
+        this->scanAreaForTargets1();
         this->checkForCollisions();
     } else {
         // Check if there is any known targets in the public channel
@@ -293,6 +353,14 @@ void Agent::update()
         } else
             default_behavior();  // Do the default maneuver
     }
+}
+
+void Agent::update2()
+{
+}
+
+void Agent::update3()
+{
 }
 
 bool Agent::move(const Direction& direction)
