@@ -18,6 +18,5 @@ void Worker::mainProcess()
     connect(&ai, &Environment::clearScreen, this, &Worker::clearScreen);
 
     ai.render();
-    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     ai.play();
 }
