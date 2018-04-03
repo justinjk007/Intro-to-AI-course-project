@@ -18,5 +18,5 @@ void Worker::mainProcess()
     connect(&ai, &Environment::clearScreen, this, &Worker::clearScreen);
 
     ai.render();
-    ai.play();
+    ai.play(1);
 }

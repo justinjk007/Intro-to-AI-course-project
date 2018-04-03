@@ -68,10 +68,11 @@ class Environment : public QObject
 {
     Q_OBJECT
    public:
+    int scenario;
     Environment();
     // TODO Clear all globals after every iteration, do it in play may be ?
     void render();
-    void play();
+    void play(const int&);
 
    signals:
     void renderAgent(std::vector<Point<int>>, std::vector<int>);   // update/render agent

@@ -53,8 +53,9 @@ void Environment::render()
     emit renderAgent(agent_loc, agent_id);
 }
 
-void Environment::play()
+void Environment::play(const int& scene)
 {
+    this->scenario = scene;
     while (true) {
         for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
             std::this_thread::sleep_for(std::chrono::milliseconds(delay_after_each_step));
