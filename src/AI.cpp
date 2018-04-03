@@ -267,6 +267,7 @@ void Agent::update()
         }
     };
 
+    // FIXME
     // Point<int> nullpoint(2000, 2000);
     // if (!compare(this->target_location, nullpoint)) {  // if target_location != nullpoint
     //     if (!moveTowards(target_location)) {           // If valid target location is known move
