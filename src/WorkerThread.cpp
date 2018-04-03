@@ -1,7 +1,7 @@
-#include <chrono>
-#include <thread>
-#include <ctime>
 #include "WorkerThread.hpp"
+#include <chrono>
+#include <ctime>
+#include <thread>
 #include "AI.hpp"
 
 void Worker::mainProcess()

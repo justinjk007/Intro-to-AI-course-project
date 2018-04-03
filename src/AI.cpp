@@ -4,7 +4,9 @@ std::vector<Agent> g_agents;
 std::vector<Target> g_targets;
 std::list<Target> public_channel;
 
-const int step_size = 50;  // How many distance each agent can cover in one step
+const int step_size             = 50;   // How many distance each agent can cover in one step
+const int delay_after_each_step = 50;  // WARNING!!! If the delay is considerably less than 50ms it
+                                        // will use more CPU and even make your system unresponsive
 
 // Initialize environment
 Environment::Environment()
@@ -14,7 +16,7 @@ Environment::Environment()
         return floor + std::rand() / (RAND_MAX / ceiling + floor);
     };
 
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 5; ++i) {
         g_agents.push_back(Agent(Point<int>(rand(), rand()), i));
         for (int j = 0; j < 5; ++j) {
             g_targets.push_back(Target(Point<int>(rand(), rand()), i));
@@ -55,92 +57,181 @@ void Environment::play()
 {
     while (true) {
         for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
-            // WARNING!!! If the delay is considerably less than 50ms it will use more CPU and even
-            // make your system unresponsive
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            // it->update();  // make the agents next move
-            it->moveTowards(Point<int>(500, 500));
-	    // FIXME: Moving to points in the middle seems to be breaking
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay_after_each_step));
+            it->update();  // make the agents next move
             this->render();
         }
     }
 }
 
-bool Agent::moveRight()
+bool Agent::moveRight(int x)
 {
-    if ((this->location.x() + step_size) <= 1000) {
-        this->location.addX(step_size);
-        // std::cout << "right\n";
-        return true;
+    /**
+     * The parameter x is the destination x the agent is trying to reach so if moving to that means
+     * making a move less than 50 units move to x.
+     */
+    std::function<bool()> default_behavior = [=]() {
+        if ((this->location.x() + step_size) <= 1000) {
+            this->location.addX(step_size);
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    if (x == 0) {  // Default
+        return default_behavior();
     } else {
-        // std::cout << "can't move right\n";
-        return false;
+        int new_step_size = x - this->location.x();
+        if (new_step_size <= step_size) {
+            if ((this->location.x() + new_step_size) <= 1000) {
+                this->location.addX(new_step_size);
+                return true;
+            } else {
+                return false;
+            }
+        } else {  // If the wanted step size is greater than usual step size
+            return default_behavior();
+        }
     }
 }
 
-bool Agent::moveLeft()
+bool Agent::moveLeft(int x)
 {
-    if ((this->location.x() - step_size) >= 0) {
-        this->location.addX(-step_size);
-        // std::cout << "left\n";
-        return true;
+    std::function<bool()> default_behavior = [=]() {
+        if ((this->location.x() - step_size) >= 0) {
+            this->location.addX(-step_size);
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    if (x == 0) {  // Default
+        return default_behavior();
     } else {
-        // std::cout << "can't move left\n";
-        return false;
+        int new_step_size = this->location.x() - x;
+        if (new_step_size <= step_size) {
+            if ((this->location.x() - new_step_size) >= 0) {
+                this->location.addX(-new_step_size);
+                return true;
+            } else {
+                return false;
+            }
+        } else {  // If the wanted step size is greater than usual step size
+            return default_behavior();
+        }
     }
 }
 
-bool Agent::moveDown()
+bool Agent::moveDown(int y)
 {
-    if ((this->location.y() + step_size) <= 1000) {
-        this->location.addY(step_size);
-        // std::cout << "down\n";
-        return true;
+    /**
+     * The parameter y is the destination y the agent is trying to reach so if moving to
+     * that means making a move less than 50 units move to y
+     */
+    std::function<bool()> default_behavior = [=]() {
+        if ((this->location.y() + step_size) <= 1000) {
+            this->location.addY(step_size);
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    if (y == 0) {  // Default
+        return default_behavior();
     } else {
-        // std::cout << "can't move down\n";
-        return false;
+        int new_step_size = y - this->location.y();
+        if (new_step_size <= step_size) {
+            if ((this->location.y() + new_step_size) <= 1000) {
+                this->location.addY(new_step_size);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return default_behavior();
+        }
     }
 }
 
-bool Agent::moveUp()
+bool Agent::moveUp(int y)
 {
-    if ((this->location.y() - step_size) >= 0) {
-        this->location.addY(-step_size);
-        // std::cout << "up\n";
-        return true;
+    std::function<bool()> default_behavior = [=]() {
+        if ((this->location.y() - step_size) >= 0) {
+            this->location.addY(-step_size);
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    if (y == 0) {  // Default
+        return default_behavior();
     } else {
-        // std::cout << "can't move up\n";
-        return false;
+        int new_step_size = this->location.y() - y;
+        if (new_step_size <= step_size) {
+            if ((this->location.y() - new_step_size) >= 0) {
+                this->location.addY(-new_step_size);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return default_behavior();
+        }
     }
 }
 
 void Agent::scanAreaForTargets()
 {
     /**
-     * If there are targets nearby mark them as killed, which will remove it from rendering. Also
+     * If there are targets nearby mark them as killed, which will remove it from rendering.
+     * Also
      * ++targetsFound of the agent. Return false if nothing is collected
      */
-    int radar_range = 55;
-    for (auto it = g_targets.begin(); it != g_targets.end(); ++it)
-        // If a target has the same id and is nearby get it
-        if (it->id == this->id && distance(it->location, this->location) <= radar_range) {
+    int range = 55;
+    auto t    = std::chrono::duration_cast<std::chrono::milliseconds>(
+                 std::chrono::steady_clock::now() - this->last_broadcast_time)
+                 .count();  // Time between last broadcast
+
+    for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
+        if (it->id == this->id && distance(it->location, this->location) <= range) {
+            // If a target has the same id and is nearby get it
             it->killed = true;
             this->targets_found++;
+        } else if (it->id != this->id && distance(it->location, this->location) <= range &&
+                   t > 1500) {
+            // If not our target broadcast in the public channel, lie 1/4 times
+            if (rand_3_by_4()) {
+                this->last_broadcast_time = std::chrono::steady_clock::now();
+                public_channel.push_back(*it);
+            } else {
+                // Lies
+                Target foo(it->location, it->id);
+                foo.location.addX(200);
+                foo.location.addY(-200);
+                this->last_broadcast_time = std::chrono::steady_clock::now();
+                public_channel.push_back(foo);
+            }
         }
+    }
 }
 
 void Agent::checkForCollisions()
 {
     /**
-     * If there are any other agents nearby move away from them or do some maneuver to avoid
-     * collision
+     * If there are any other agents nearby move away from them or do some maneuver
+     * to avoid collision
      */
     int collision_range = 120;
     for (auto it = g_agents.begin(); it != g_agents.end(); ++it)
         if (it->id != this->id && distance(it->location, this->location) <= collision_range) {
             if (move(this->heading))
-                ;  // When collision is predicted take a step in the heading direction, if it can't
-                   // make that step move in the opposite direction of the heading direction
+                ;  // When collision is predicted take a step in the heading
+                   // direction, if it can't make that step move in the opposite
+                   // direction of the heading direction
             else
                 move(opposite(this->heading));
         }
@@ -149,13 +240,14 @@ void Agent::checkForCollisions()
 void Agent::update()
 {
     /*
-     * Each agent gets a random heading direction so it knows which direction is it going in general
-     * and random next_step direction.(done during construction). If its heading down for example
-     * each next step will be left or right, until it can't move in that direction anymore then it
-     * will move one step in direction of heading and make the next_step to opposite direction. It
-     * moves right until it can't move down. Then it will go in the opposite direction(up) and move
-     * to the upper corners. Since agents never run out of fuel it does this over and over util one
-     * of the agents finds all the targets.
+     * Each agent gets a random heading direction so it knows which direction is it
+     * going in general and random next_step direction.(done during construction).
+     * If its heading down for example each next step will be left or right, until
+     * it can't move in that direction anymore then it will move one step in
+     * direction of heading and make the next_step to opposite direction. It moves
+     * right until it can't move down. Then it will go in the opposite direction(up)
+     * and move to the upper corners. Since agents never run out of fuel it does
+     * this over and over util one of the agents finds all the targets.
      */
 
     // Lambda storing the default_behavior
@@ -177,31 +269,36 @@ void Agent::update()
 
     Point<int> nullpoint(2000, 2000);
     if (!compare(this->target_location, nullpoint)) {  // if target_location != nullpoint
-        // If valid target location is known move towards it
-        if (!moveTowards(target_location)) {
-            // If it can't move to that location then delete the target location
-            this->target_location = nullpoint;
+        if (!moveTowards(target_location)) {           // If valid target location is known move
+                                                       // towards it
+            this->target_location = nullpoint;         // If it can't move here then delete it
         }
         this->scanAreaForTargets();
         this->checkForCollisions();
     } else {
         // Check if there is any known targets in the public channel
-        for (auto it = public_channel.begin(); it != public_channel.end(); ++it) {
-            if (it->id == this->id) {
-                // This is our target so set it as target_location
-                this->target_location = it->location;
-                it                    = public_channel.erase(it);  // Remove from channel
-                default_behavior();                                // Make the default maneuver
-            } else
-                default_behavior();  // Make the default maneuver
-        }
+        if (!public_channel.empty()) {
+            auto it = public_channel.begin();
+            for (; it != public_channel.end();) {
+                if (it->id == this->id) {
+                    this->target_location = it->location;              // Set it as new target
+                    it                    = public_channel.erase(it);  // Remove from channel
+                    default_behavior();                                // Do the default maneuver
+                } else {
+                    ++it;
+                }
+            }
+            default_behavior();  // We did't find any targets so do the default
+        } else
+            default_behavior();  // Do the default maneuver
     }
 }
 
 bool Agent::move(const Direction& direction)
 {
     /**
-     * Move to the given direction if possible, return false if you can't move anymore.
+     * Move to the given direction if possible, return false if you can't move
+     * anymore.
      */
     switch (direction) {
         case left:
@@ -218,23 +315,28 @@ bool Agent::move(const Direction& direction)
 bool Agent::moveTowards(Point<int> destination)
 {
     /**
-     * This method will try to move towards the given destination, if it can't it will return false.
+     * This method will try to move towards the given destination, if it can't it
+     * will return false.
      */
     int radar_range = 50;
-    if ((distance(this->location, destination) < 50)) {
-        return false;  // We are at the location so return false forgetting about this location
+    int xy_range    = 50;
+    if ((distance(this->location, destination) < radar_range)) {
+        return false;  // We are at the location so return false forgetting about
+                       // this location
     }
 
-    if ((destination.x() - this->location.x()) < radar_range && moveLeft())
+    int val1 = destination.x() - this->location.x();
+    int val2 = destination.y() - this->location.y();
+    if (val1 < xy_range && val1 != 0 && moveLeft(destination.x()))
         return true;
-    else if ((destination.x() - this->location.x()) > radar_range && moveRight())
+    else if (val1 > xy_range && val1 != 0 && moveRight(destination.x()))
         return true;
-    else if ((destination.y() - this->location.y()) < radar_range && moveUp())
+    else if (val2 < xy_range && val2 != 0 && moveUp(destination.y()))
         return true;
-    else if ((destination.y() - this->location.y()) > radar_range && moveDown())
+    else if (val2 > xy_range && val2 != 0 && moveDown(destination.y()))
         return true;
     else {
-        return false;
+        return false;  // It might be a fake point which agent can't reach so false
     }
 }
 
@@ -284,6 +386,18 @@ Direction rand(const Direction& a, const Direction& b)
         return a;
     else
         return b;
+}
+
+bool rand_3_by_4()
+{
+    /**
+     * This will return true 3/4 time
+     */
+    int val = 1 + std::rand() / (RAND_MAX / 4 + 1);
+    if (val == 2)
+        return true;
+    else
+        return false;
 }
 
 Direction opposite(const Direction& direction)
