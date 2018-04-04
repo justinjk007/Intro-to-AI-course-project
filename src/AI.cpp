@@ -294,8 +294,10 @@ void Agent::scanAreaForTargets1()
     for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
         if (it->id == this->id && distance(it->location, this->location) <= range) {
             // If a target has the same id and is nearby get it
-            it->killed = true;
-            this->targets_found++;
+            if (!it->killed) {
+                it->killed = true;
+                this->targets_found++;
+            }
         } else if (it->id != this->id && distance(it->location, this->location) <= range &&
                    t > 1500) {
             // If not our target broadcast in the public channel, lie 1/4 times
@@ -327,8 +329,10 @@ void Agent::scanAreaForTargets2()
     for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
         if (it->id == this->id && distance(it->location, this->location) <= range) {
             // If a target has the same id and is nearby get it
-            it->killed = true;
-            this->targets_found++;
+            if (!it->killed) {
+                it->killed = true;
+                this->targets_found++;
+            }
         } else if (it->id != this->id && distance(it->location, this->location) <= range &&
                    t > 1500) {
             // If not our target broadcast in the public channel, lie 1/4 times
@@ -351,8 +355,10 @@ void Agent::scanAreaForTargets3()
     for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
         if (it->id == this->id && distance(it->location, this->location) <= range) {
             // If a target has the same id and is nearby get it
-            it->killed = true;
-            this->targets_found++;
+            if (!it->killed) {
+                it->killed = true;
+                this->targets_found++;
+            }
         } else if (it->id != this->id && distance(it->location, this->location) <= range &&
                    t > 3000) {
             this->last_broadcast_time = std::chrono::steady_clock::now();
