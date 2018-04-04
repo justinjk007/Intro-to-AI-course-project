@@ -69,7 +69,9 @@ void Environment::play(const int& scene)
                 it->moves_made++;  // Count the current move
                 this->render();
                 std::this_thread::sleep_for(std::chrono::milliseconds(delay_after_each_step));
-                if (it->targets_found == 5) run_condition = false;
+                if (it->targets_found == 5) {
+                    run_condition = false;
+                }
             }
         }
     } else if (scene == 2) {
@@ -83,7 +85,9 @@ void Environment::play(const int& scene)
                 std::this_thread::sleep_for(std::chrono::milliseconds(delay_after_each_step));
                 found += it->targets_found;
             }
-            if (found == 25) run_condition = false;
+            if (found == 25) {
+                run_condition = false;
+            }
         }
     } else {  // Scenario 3
         while (run_condition) {
@@ -116,17 +120,17 @@ void Environment::writeToFile()
      */
     double happiness[5]       = {0.0};
     double competitiveness[5] = {0.0};
-    double happiness_sum      = 0;  // Sum
-    double happiness_ave      = 0;  // Mean
-    double happiness_sd       = 0;  // Standard Deviation
-    double happiness_max      = 0;  // Maximum happiness
-    double happiness_min      = 0;  // Minimum happiness
+    double happiness_sum      = 0.0;  // Sum
+    double happiness_ave      = 0.0;  // Mean
+    double happiness_sd       = 0.0;  // Standard Deviation
+    double happiness_max      = 0.0;  // Maximum happiness
+    double happiness_min      = 0.0;  // Minimum happiness
     // Calculate happiness for all agents
     for (auto it = g_agents.begin(); it != g_agents.end(); it++) {
-        happiness[it->id] = it->targets_found / (it->moves_made + 1);
+        happiness[it->id] = it->targets_found / (it->moves_made + 1.0);
         happiness_sum += happiness[it->id];
     }
-    happiness_ave             = happiness_sum / 5;
+    happiness_ave             = happiness_sum / 5.0;
     happiness_min             = *std::min_element(happiness, happiness + 5);
     happiness_max             = *std::max_element(happiness, happiness + 5);
     double happiness_variance = 0;
@@ -147,9 +151,9 @@ void Environment::writeToFile()
     // Scene, Iter, Agent, #Targets, Steps, Happ, Max, Min, Ave, SD, competitiveness
     for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
         file << this->scenario << "," << this->iteration << "," << it->id << ","
-                  << it->targets_found << "," << it->moves_made << "," << happiness[it->id] << ","
-                  << happiness_max << "," << happiness_min << "," << happiness_ave << ","
-                  << happiness_sd << "," << competitiveness[it->id] << "\n";
+             << it->targets_found << "," << it->moves_made << "," << happiness[it->id] << ","
+             << happiness_max << "," << happiness_min << "," << happiness_ave << "," << happiness_sd
+             << "," << competitiveness[it->id] << "\n";
     }
     file.close();
 }
@@ -328,13 +332,8 @@ void Agent::scanAreaForTargets2()
         } else if (it->id != this->id && distance(it->location, this->location) <= range &&
                    t > 1500) {
             // If not our target broadcast in the public channel, lie 1/4 times
-            if (rand_3_by_4()) {
-                this->last_broadcast_time = std::chrono::steady_clock::now();
-                private_channel.push_back(*it);
-            } else {
-                this->last_broadcast_time = std::chrono::steady_clock::now();
-                public_channel.push_back(*it);
-            }
+            this->last_broadcast_time = std::chrono::steady_clock::now();
+            private_channel.push_back(*it);
         }
     }
 }
@@ -528,9 +527,9 @@ void Agent::update3()
             auto it = private_channel.begin();
             for (; it != private_channel.end();) {
                 if (it->id == this->id) {
-                    this->target_location = it->location;              // Set it as new target
+                    this->target_location = it->location;               // Set it as new target
                     it                    = private_channel.erase(it);  // Remove from channel
-                    default_behavior();                                // Do the default maneuver
+                    default_behavior();                                 // Do the default maneuver
                 } else {
                     ++it;
                 }

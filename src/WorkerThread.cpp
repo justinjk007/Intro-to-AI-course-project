@@ -18,15 +18,16 @@ void Worker::mainProcess()
     connect(&ai, &Environment::renderTarget, this, &Worker::renderTarget);
     connect(&ai, &Environment::clearScreen, this, &Worker::clearScreen);
 
-    int scene = 2;
+    int scene = 3;
     std::cout << "Running scenario " << scene << "\n";
 
     for (int i = 1; i < 26; i++) {  // Here i is the number of iteration, for 25 iterations
         ai.initializeEnvironment();
         ai.render();
         ai.iteration = i;
-        ai.play(3);
+        ai.play(scene);
         ai.writeToFile();
         ai.clearGlobals();
+	std::cout << "Finished 1 iteration\n";
     }
 }
