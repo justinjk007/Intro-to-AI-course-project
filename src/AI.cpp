@@ -3,6 +3,7 @@
 std::vector<Agent> g_agents;
 std::vector<Target> g_targets;
 std::list<Target> public_channel;
+std::list<Target> private_channel;
 
 const int step_size             = 50;  // How many distance each agent can cover in one step
 const int delay_after_each_step = 50;  // WARNING!!! If the delay is considerably less than 50ms it
@@ -59,39 +60,40 @@ void Environment::render()
 
 void Environment::play(const int& scene)
 {
-    this->scenario = scene;
+    bool run_condition = true;
+    this->scenario     = scene;
     if (scene == 1) {
-        while (true) {
+        while (run_condition) {
             for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
                 it->update1();     // Make the agents next move
                 it->moves_made++;  // Count the current move
                 this->render();
                 std::this_thread::sleep_for(std::chrono::milliseconds(delay_after_each_step));
-                if (it->targets_found == 5) return;
+                if (it->targets_found == 5) run_condition = false;
             }
         }
     } else if (scene == 2) {
-        while (true) {
+        int found = 0;
+        while (run_condition) {
+            found = 0;
             for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
                 it->update2();     // Make the agents next move
                 it->moves_made++;  // Count the current move
                 this->render();
                 std::this_thread::sleep_for(std::chrono::milliseconds(delay_after_each_step));
-                bool win = true;
-                for (auto itt = g_agents.begin(); itt != g_agents.end(); ++itt) {
-                    win = win &&
-                          (itt->targets_found == 5);  // Check if all the agents found there target
-                }
-                if (win) return;
+                found += it->targets_found;
             }
+            if (found == 25) run_condition = false;
         }
     } else {  // Scenario 3
-        for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
-            it->update3();     // Make the agents next move
-            it->moves_made++;  // Count the current move
-            this->render();
-            std::this_thread::sleep_for(std::chrono::milliseconds(delay_after_each_step));
-            if (it->targets_found == 5) return;
+        while (run_condition) {
+            for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
+                it->update3();     // Make the agents next move
+                it->moves_made++;  // Count the current move
+                this->render();
+                std::this_thread::sleep_for(std::chrono::milliseconds(delay_after_each_step));
+                if (it->targets_found == 5) run_condition = false;
+            }
         }
     }
 }
@@ -101,9 +103,10 @@ void Environment::clearGlobals()
     /**
      * This fucntion will clear the globals before the next iteration
      */
-    g_agents.clear();        // clear vector
-    g_targets.clear();       // clear vector
-    public_channel.clear();  // clear list
+    g_agents.clear();         // clear vector
+    g_targets.clear();        // clear vector
+    public_channel.clear();   // clear list
+    private_channel.clear();  // clear list
 }
 
 void Environment::writeToFile()
@@ -274,9 +277,10 @@ bool Agent::moveUp(int y)
 void Agent::scanAreaForTargets1()
 {
     /**
-     * If there are targets nearby mark them as killed, which will remove it from rendering.
-     * Also
-     * ++targetsFound of the agent. Return false if nothing is collected
+     * If there are targets nearby mark them as killed, which will
+     * remove it from rendering.  Also targetsFound++ of the
+     * agent. Return false if nothing is collected. This is for scenario
+     * 1 where public channel communication is used.
      */
     int range = 55;
     auto t    = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -308,10 +312,54 @@ void Agent::scanAreaForTargets1()
 
 void Agent::scanAreaForTargets2()
 {
+    /**
+     * This is for scenario 2 where public and private channels are used
+     */
+    int range = 55;
+    auto t    = std::chrono::duration_cast<std::chrono::milliseconds>(
+                 std::chrono::steady_clock::now() - this->last_broadcast_time)
+                 .count();  // Time between last broadcast
+
+    for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
+        if (it->id == this->id && distance(it->location, this->location) <= range) {
+            // If a target has the same id and is nearby get it
+            it->killed = true;
+            this->targets_found++;
+        } else if (it->id != this->id && distance(it->location, this->location) <= range &&
+                   t > 1500) {
+            // If not our target broadcast in the public channel, lie 1/4 times
+            if (rand_3_by_4()) {
+                this->last_broadcast_time = std::chrono::steady_clock::now();
+                private_channel.push_back(*it);
+            } else {
+                this->last_broadcast_time = std::chrono::steady_clock::now();
+                public_channel.push_back(*it);
+            }
+        }
+    }
 }
 
 void Agent::scanAreaForTargets3()
 {
+    /**
+     * This is for scenario 3 where only private channels are used
+     */
+    int range = 55;
+    auto t    = std::chrono::duration_cast<std::chrono::milliseconds>(
+                 std::chrono::steady_clock::now() - this->last_broadcast_time)
+                 .count();  // Time between last broadcast
+
+    for (auto it = g_targets.begin(); it != g_targets.end(); ++it) {
+        if (it->id == this->id && distance(it->location, this->location) <= range) {
+            // If a target has the same id and is nearby get it
+            it->killed = true;
+            this->targets_found++;
+        } else if (it->id != this->id && distance(it->location, this->location) <= range &&
+                   t > 3000) {
+            this->last_broadcast_time = std::chrono::steady_clock::now();
+            private_channel.push_back(*it);
+        }
+    }
 }
 
 void Agent::checkForCollisions()
@@ -320,16 +368,16 @@ void Agent::checkForCollisions()
      * If there are any other agents nearby move away from them or do some maneuver
      * to avoid collision
      */
-    int collision_range = 50;
-    for (auto it = g_agents.begin(); it != g_agents.end(); ++it)
-        if (it->id != this->id && distance(it->location, this->location) <= collision_range) {
-            if (move(this->heading))
-                ;  // When collision is predicted take a step in the heading
-                   // direction, if it can't make that step move in the opposite
-                   // direction of the heading direction
-            else
-                move(opposite(this->heading));
-        }
+    // int collision_range = 50;
+    // for (auto it = g_agents.begin(); it != g_agents.end(); ++it)
+    //     if (it->id != this->id && distance(it->location, this->location) <= collision_range) {
+    //         if (move(this->heading))
+    //             ;  // When collision is predicted take a step in the heading
+    //                // direction, if it can't make that step move in the opposite
+    //                // direction of the heading direction
+    //         else
+    //             move(opposite(this->heading));
+    //     }
 }
 
 void Agent::update1()
@@ -391,10 +439,106 @@ void Agent::update1()
 
 void Agent::update2()
 {
+    // Lambda storing the default_behavior
+    std::function<void()> default_behavior = [=]() {
+        if (move(this->next_step)) {
+            this->scanAreaForTargets2();
+            this->checkForCollisions();
+        } else {
+            this->next_step = opposite(this->next_step);
+            if (!move(this->heading)) {
+                this->heading = opposite(this->heading);
+            } else {
+                // If can move check these
+                this->scanAreaForTargets2();
+                this->checkForCollisions();
+            }
+        }
+    };
+
+    Point<int> nullpoint(2000, 2000);
+    if (!compare(this->target_location, nullpoint)) {  // if target_location != nullpoint
+        if (!moveTowards(target_location)) {           // If valid target location is known move
+                                                       // towards it
+            this->target_location = nullpoint;         // If it can't move here then delete it
+        }
+        this->scanAreaForTargets2();
+        this->checkForCollisions();
+    } else {
+        // Check if there is any known targets in the public or privat te channels
+        if (!private_channel.empty()) {
+            auto it = private_channel.begin();
+            for (; it != private_channel.end();) {
+                if (it->id == this->id) {
+                    this->target_location = it->location;               // Set it as new target
+                    it                    = private_channel.erase(it);  // Remove from channel
+                    default_behavior();                                 // Do the default maneuver
+                } else {
+                    ++it;
+                }
+            }
+            default_behavior();  // We did't find any targets so do the default
+        } else if (!public_channel.empty()) {
+            auto it = public_channel.begin();
+            for (; it != public_channel.end();) {
+                if (it->id == this->id) {
+                    this->target_location = it->location;              // Set it as new target
+                    it                    = public_channel.erase(it);  // Remove from channel
+                    default_behavior();                                // Do the default maneuver
+                } else {
+                    ++it;
+                }
+            }
+            default_behavior();  // We did't find any targets so do the default
+        } else
+            default_behavior();  // Do the default maneuver
+    }
 }
 
 void Agent::update3()
 {
+    // Lambda storing the default_behavior
+    std::function<void()> default_behavior = [=]() {
+        if (move(this->next_step)) {
+            this->scanAreaForTargets3();
+            this->checkForCollisions();
+        } else {
+            this->next_step = opposite(this->next_step);
+            if (!move(this->heading)) {
+                this->heading = opposite(this->heading);
+            } else {
+                // If can move check these
+                this->scanAreaForTargets3();
+                this->checkForCollisions();
+            }
+        }
+    };
+
+    Point<int> nullpoint(2000, 2000);
+    if (!compare(this->target_location, nullpoint)) {  // if target_location != nullpoint
+        if (!moveTowards(target_location)) {           // If valid target location is known move
+                                                       // towards it
+            this->target_location = nullpoint;         // If it can't move here then delete it
+        }
+        this->scanAreaForTargets3();
+        this->checkForCollisions();
+    } else {
+        // Check if there is any known targets in the public channel
+        if (!private_channel.empty()) {
+            auto it = private_channel.begin();
+            for (; it != private_channel.end();) {
+                if (it->id == this->id) {
+                    this->target_location = it->location;              // Set it as new target
+                    it                    = private_channel.erase(it);  // Remove from channel
+                    default_behavior();                                // Do the default maneuver
+                } else {
+                    ++it;
+                }
+            }
+            default_behavior();  // We did't find any targets so do the default
+        } else
+            default_behavior();  // Do the default maneuver
+    }
 }
 
 bool Agent::move(const Direction& direction)

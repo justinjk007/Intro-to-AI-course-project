@@ -22,7 +22,7 @@ void Worker::mainProcess()
         ai.initializeEnvironment();
         ai.render();
         ai.iteration = i;
-        ai.play(1);
+        ai.play(2);
         ai.writeToFile();
         ai.clearGlobals();
     }
