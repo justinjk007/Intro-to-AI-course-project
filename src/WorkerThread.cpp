@@ -1,8 +1,8 @@
 #include "WorkerThread.hpp"
 #include <chrono>
 #include <ctime>
-#include <thread>
 #include <iostream>
+#include <thread>
 #include "AI.hpp"
 
 void Worker::mainProcess()
@@ -18,11 +18,14 @@ void Worker::mainProcess()
     connect(&ai, &Environment::renderTarget, this, &Worker::renderTarget);
     connect(&ai, &Environment::clearScreen, this, &Worker::clearScreen);
 
+    int scene = 2;
+    std::cout << "Running scenario " << scene << "\n";
+
     for (int i = 1; i < 26; i++) {  // Here i is the number of iteration, for 25 iterations
         ai.initializeEnvironment();
         ai.render();
         ai.iteration = i;
-        ai.play(2);
+        ai.play(3);
         ai.writeToFile();
         ai.clearGlobals();
     }

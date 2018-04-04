@@ -146,7 +146,7 @@ void Environment::writeToFile()
     }
     // Scene, Iter, Agent, #Targets, Steps, Happ, Max, Min, Ave, SD, competitiveness
     for (auto it = g_agents.begin(); it != g_agents.end(); ++it) {
-        std::cout << this->scenario << "," << this->iteration << "," << it->id << ","
+        file << this->scenario << "," << this->iteration << "," << it->id << ","
                   << it->targets_found << "," << it->moves_made << "," << happiness[it->id] << ","
                   << happiness_max << "," << happiness_min << "," << happiness_ave << ","
                   << happiness_sd << "," << competitiveness[it->id] << "\n";
