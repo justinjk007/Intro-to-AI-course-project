@@ -17,9 +17,7 @@
 class Object
 {
    public:
-    Object(Point<int> loc, int id) : location(loc), id(id)
-    {
-    }
+    Object(Point<int> loc, int id) : location(loc), id(id) {}
     Point<int> location;
     int id;
 };
@@ -80,13 +78,12 @@ class Environment : public QObject
    public:
     int scenario;
     int iteration;
-    Environment()
-    {
-    }
+    Environment() {}
     void initializeEnvironment();
     void render();
     void play(const int&);
     void writeToFile();
+    void processData();
     void clearGlobals();
 
    signals:
