@@ -1,5 +1,8 @@
 #include <fstream>
 #include <iostream>
+#include <string>
+
+using namespace std;
 
 int main()
 {
@@ -19,38 +22,32 @@ int main()
         exit(1);
     }
 
-    int sumHappy = 0;
-    int sumComp  = 0;
-    int avgHappy = 0;
-    int avgComp  = 0;
-    int total    = 0;
-    int scenario = 0;
-    int current;
+    double sumHappy[3] = {0.0};
+    double sumComp[3]  = {0.0};
+    int scenario       = 0;
+    string cell;
 
-    while (csvData >> current) {
-        scenario += current;
-        // Tracks total items
-        total++;
-        // Skip next 7 items
-        for (int skip = 0; skip < 7; skip++) {
-            csvData >> current;
+    while (csvData.good()) {
+        getline(csvData, cell, ',');
+        try {
+            scenario = std::stoi(cell);
+        } catch (const exception& e) {
+            cout << "stuuf is messed up " << cell << "\n";
+            cout << e.what() << "\n";
+            exit(1);
         }
-        // read happiness
-        csvData >> current;
-        sumHappy += current;
-        // Skip
-        csvData >> current;
-        // read competitiveness
-        csvData >> current;
-        sumComp += current;
+        for (int skip = 0; skip < 8; skip++) {
+            getline(csvData, cell, ',');  // Skip next 7 columns
+        }
+        getline(csvData, cell, ',');
+        sumHappy[scenario - 1] += stod(cell);
+        getline(csvData, cell, ',');
+        getline(csvData, cell, '\n');
+        sumComp[scenario - 1] += stod(cell);
     }
-    // Calculate and write averages to csv
-    avgHappy = sumHappy / total;
-    avgComp  = sumComp / total;
-    scenario = scenario / total;
-    csvAvg << scenario;
-    csvAvg << avgHappy;
-    csvAvg << avgComp;
+    csvAvg << 1 << "," << sumHappy[0] / 25 << "," << sumComp[0] / 25 << "\n";
+    csvAvg << 2 << "," << sumHappy[1] / 25 << "," << sumComp[1] / 25 << "\n";
+    csvAvg << 3 << "," << sumHappy[2] / 25 << "," << sumComp[2] / 25 << "\n";
 
     // Clean up files
     csvData.close();

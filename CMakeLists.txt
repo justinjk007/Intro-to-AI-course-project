@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if (MSVC)
   add_compile_options(/MP /Gm- /W3) # Turn on some erros
 else()
-  add_compile_options(-Wall -Wextra -Wpedantic) # Turn on all errors
+  add_compile_options(-Wall -Wextra -Wpedantic -g) # Turn on all errors
 endif(MSVC)
 
 # Supply cmake find module for finding SDL2 image when in UNIX
