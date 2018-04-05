@@ -64,3 +64,20 @@ sudo apt install libsdl2-image-dev
 #+END_SRC
 
 The *CMake* file I have can automatically find and build these libs
+
+* Qt is used to manage front-end and back-end threads and their communication
+** On Windows
+ - Download qt libs from here https://www.qt.io/download
+ - Add the library directory to path as =QT_DIR=, for me it is =C:\Dev\Qt\5.9.1=
+ - Also add the library binaries to =Path= for me it is =C:\Dev\Qt\5.9.1\msvc2015_64\bin=
+
+** On Linux(Ubuntu)
+
+ - Install necessary Qt modules from an updated *PPA* like this one: https://launchpad.net/~beineri/+archive/ubuntu/opt-qt592-trusty
+ - Install necessary modules with these commands after adding the *PPA*
+  #+BEGIN_SRC sh
+  sudo apt install qt59base
+  sudo apt install qt59declarative
+  #+END_SRC
+
+* Now you should be able to use CMake to build the source code

@@ -15,4 +15,4 @@ of its targets spawned randomly in the environment with a fixed location.
 
 # Setup
 
-Read [SETUP.org](./docs/SETUP.org) to setup `SDL2` and `SDL2_image`
+Read [SETUP.org](./docs/SETUP.org) to setup `SDL2`,  `SDL2_image` and `Qt5`
