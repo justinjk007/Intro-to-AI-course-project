@@ -140,7 +140,10 @@ void Environment::writeToFile()
     happiness_variance /= 5;
     happiness_sd = sqrt(happiness_variance);
     for (int i = 0; i < 5; i++) {
-        competitiveness[i] = (happiness[i] - happiness_min) / (happiness_max - happiness_min);
+        if (!(happiness[i] - happiness_min == 0))
+            competitiveness[i] = (happiness[i] - happiness_min) / (happiness_max - happiness_min);
+        else
+            competitiveness[i] = 0;
     }
     std::ofstream file;
     file.open("G16_1.csv", std::ios_base::app);
@@ -182,16 +185,12 @@ void Environment::processData()
     int scenario       = 0;
     string cell;
 
-    while (csvData.good()) {
+    int i = 1;
+    while (i <= 375) {
+        cout << "Line: " << i << "\n";
         getline(csvData, cell, ',');
-        try {
-            scenario = std::stoi(cell);
-        } catch (const exception& e) {
-            cout << "stuff is messed up " << cell << "\n";
-            cout << e.what() << "\n";
-            exit(1);
-        }
-        for (int skip = 0; skip < 8; skip++) {
+        scenario = std::stoi(cell);
+        for (int skip = 0; skip < 7; skip++) {
             getline(csvData, cell, ',');  // Skip next 7 columns
         }
         getline(csvData, cell, ',');
@@ -199,10 +198,11 @@ void Environment::processData()
         getline(csvData, cell, ',');
         getline(csvData, cell, '\n');
         sumComp[scenario - 1] += stod(cell);
+        i++;
     }
-    csvAvg << 1 << "," << sumHappy[0] / 25 << "," << sumComp[0] / 25 << "\n";
-    csvAvg << 2 << "," << sumHappy[1] / 25 << "," << sumComp[1] / 25 << "\n";
-    csvAvg << 3 << "," << sumHappy[2] / 25 << "," << sumComp[2] / 25 << "\n";
+    csvAvg << 1 << "," << sumHappy[0] / 125.0 << "," << sumComp[0] / 125.0 << "\n";
+    csvAvg << 2 << "," << sumHappy[1] / 125.0 << "," << sumComp[1] / 125.0 << "\n";
+    csvAvg << 3 << "," << sumHappy[2] / 125.0 << "," << sumComp[2] / 125.0 << "\n";
 
     // Clean up files
     csvData.close();
