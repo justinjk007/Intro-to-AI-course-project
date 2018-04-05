@@ -185,10 +185,7 @@ void Environment::processData()
     int scenario       = 0;
     string cell;
 
-    int i = 1;
-    while (i <= 375) {
-        cout << "Line: " << i << "\n";
-        getline(csvData, cell, ',');
+    while (getline(csvData, cell, ',')) {
         scenario = std::stoi(cell);
         for (int skip = 0; skip < 7; skip++) {
             getline(csvData, cell, ',');  // Skip next 7 columns
@@ -198,7 +195,6 @@ void Environment::processData()
         getline(csvData, cell, ',');
         getline(csvData, cell, '\n');
         sumComp[scenario - 1] += stod(cell);
-        i++;
     }
     csvAvg << 1 << "," << sumHappy[0] / 125.0 << "," << sumComp[0] / 125.0 << "\n";
     csvAvg << 2 << "," << sumHappy[1] / 125.0 << "," << sumComp[1] / 125.0 << "\n";
