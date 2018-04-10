@@ -41,6 +41,10 @@ if (MSVC)
   file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 endif(MSVC)
+if (MSVC)
+  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+endif(MSVC)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets
   DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 message("-- Copied all the assets")

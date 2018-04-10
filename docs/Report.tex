@@ -1,0 +1,212 @@
+% Created 2018-04-10 Tue 13:17
+% Intended LaTeX compiler: pdflatex
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage[T1]{fontenc} % For times new roman font
+\usepackage{mathptmx} % For times new roman font
+\linespread{1.3} % Change line spacing
+\usepackage{xcolor}
+\usepackage{soul}
+\usepackage{helvet}
+\usepackage{listings}
+\usepackage{inconsolata}
+\usepackage{xcolor-solarized}
+\definecolor{foreground}{RGB}{184, 83, 83} % For verbatim
+\definecolor{background}{RGB}{255, 231, 231} % For verbatim
+\let\OldTexttt\texttt
+\renewcommand{\texttt}[1]{\OldTexttt{\footnotesize\colorbox{background}{\textcolor{foreground}{#1}}}}
+\newenvironment{helvetica}{\fontfamily{phv}\selectfont}{\par}
+\usepackage{hyperref} % Make the hyper-links prettier
+\hypersetup{
+colorlinks=true,
+linkcolor=blue!70!white,
+urlcolor=blue!95!black
+}
+\usepackage{enumitem}
+\setlist[1]{itemsep=5pt}
+\lstdefinelanguage{cpp}{
+language=C++,
+morekeywords={cerr,exit,string},
+deletekeywords={...},
+escapeinside={\%*}{*)},
+showspaces=false,
+showstringspaces=false,
+showtabs=false,
+stepnumber=1,
+tabsize=4,
+breakatwhitespace=false,
+breaklines=true,
+backgroundcolor=\color{solarized-base3},
+basicstyle=\scriptsize\ttfamily\color{solarized-base0},
+commentstyle=\itshape\color{solarized-base01},
+keywordstyle=\color{solarized-green},
+identifierstyle=\color{solarized-blue},
+stringstyle=\color{solarized-cyan},
+moredelim = *[l][\color{solarized-orange}]{\#},
+moredelim = **[s][\color{solarized-cyan}]{<}{>},
+rulecolor=\color{black},
+literate={{\%d}}{{\textcolor{solarized-red}{\%d}}}2
+{{\%2d}}{{\textcolor{solarized-red}{\%2d}}}3
+{{\\n}}{{\textcolor{solarized-red}{\textbackslash{}n}}}2,
+}
+\author{Justin Kaipada}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={Justin Kaipada},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 25.3.1 (Org mode 9.1.6)},
+ pdflang={English}}
+\begin{document}
+
+
+\section{AI-Course-Project}
+\label{sec:orgb31c682}
+
+We have implemented 3 scenarios of agent based search environment where each agent has to collect 5
+of its targets spawned randomly in the environment with a fixed location.
+
+\begin{itemize}
+\item Scenario 1: \textbf{Competition:} Here only public broadcast is allowed. Each agent may lie or
+broadcast the correct information about other agent's targets into a public channel that every
+agent can see. An iteration is over as soon as one agent collect all of its targets.
+\item Scenario 2: \textbf{Collaboration:} Here public and private broadcast is allowed. An agent can
+broadcast information publicly or specificly to an agents channel. Here we may or may not lie in
+the public channel and always tell the truth in private communication. Iteration is over when all
+the agents collects all the targets.
+\item Scenario 3: \textbf{Compassionate:} This is the same as Collaboration except no one will ever lie and
+the game is over when one agent collect all of its targets.
+\end{itemize}
+
+The Executables can be found in the \texttt{bin} directory
+
+\section{Setup}
+\label{sec:org078fa71}
+\subsection{SDL2 is the main rendering library used}
+\label{sec:org99d68cc}
+
+\textbf{SDL2image} add-on is also used to load add-ons
+
+\subsubsection{On Windows}
+\label{sec:orgeaffb0c}
+\begin{enumerate}
+\item Setup SDL2
+\label{sec:org325805b}
+\begin{itemize}
+\item Download \textbf{SDL2} libs from \href{https://www.libsdl.org/download-2.0.php}{here}
+\item Specifically you need the Developmental libs.
+\item I am using Visual Studio right now and I downloaded \texttt{SDL2-devel-2.0.8-VC.zip}
+\item Extract it somewhere, I extracted it to \texttt{C:\textbackslash{}Dev\textbackslash{}SDL2-2.0.8}
+\item Create a new file named \texttt{sdl2-config.cmake} in there with the following content
+\end{itemize}
+
+\lstset{language=cmake,label= ,caption= ,captionpos=b,numbers=none,language=cpp}
+\begin{lstlisting}
+set(SDL2_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include")
+# Support both 32 and 64 bit builds
+if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+  set(SDL2_LIBRARIES "${CMAKE_CURRENT_LIST_DIR}/lib/x64/SDL2.lib;${CMAKE_CURRENT_LIST_DIR}/lib/x64/SDL2main.lib")
+else ()
+  set(SDL2_LIBRARIES "${CMAKE_CURRENT_LIST_DIR}/lib/x86/SDL2.lib;${CMAKE_CURRENT_LIST_DIR}/lib/x86/SDL2main.lib")
+endif ()
+string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+\end{lstlisting}
+
+\begin{itemize}
+\item Now open control panel to \texttt{Edit environment variables} , you can just search for this term too
+\item Add a new \textbf{System variable} named \texttt{SDL2\_DIR} and set the value to the directory
+where you extracted the lib for me it will be \texttt{C:\textbackslash{}Dev\textbackslash{}SDL2-2.0.8}.
+\item I will be using \textbf{x64} libs so I will also edit the \texttt{Path} variables for
+the user and add \texttt{C:\textbackslash{}Dev\textbackslash{}SDL2-2.0.8\textbackslash{}lib\textbackslash{}x64} folder to path.
+\end{itemize}
+
+\item Setup SDL2image
+\label{sec:org3c73054}
+\begin{itemize}
+\item Download \textbf{SDL2image} libs from \href{https://www.libsdl.org/projects/SDL\_image/}{here}
+\item Specifically you need the Developmental libs.
+\item I am using Visual Studio right now and I downloaded \texttt{SDL2\_image-devel-2.0.3-VC.zip}
+\item Extract it somewhere, I extracted it to \texttt{C:\textbackslash{}Dev\textbackslash{}SDL2\_image-2.0.3}
+\item Create a new file named \texttt{sdl2\_image-config.cmake} in there with the following content.
+\end{itemize}
+
+\lstset{language=cmake,label= ,caption= ,captionpos=b,numbers=none,language=cpp}
+\begin{lstlisting}
+#+BEGIN_SRC cmake
+set(SDL2_IMAGE_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include")
+# Support both 32 and 64 bit builds
+if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+  set(SDL2_IMAGE_LIBRARIES "${CMAKE_CURRENT_LIST_DIR}/lib/x64/SDL2_image.lib")
+else ()
+  set(SDL2_IMAGE_LIBRARIES "${CMAKE_CURRENT_LIST_DIR}/lib/x86/SDL2_image.lib")
+endif ()
+string(STRIP "${SDL2_IMAGE_LIBRARIES}" SDL2_IMAGE_LIBRARIES)
+\end{lstlisting}
+
+\begin{itemize}
+\item Now open control panel to \texttt{Edit environment variables}
+\item Add a new \textbf{System variable} named \texttt{SDL2\_image\_DIR} and set the value to the directory
+where you extracted the lib for me it will be \texttt{C:\textbackslash{}Dev\textbackslash{}SDL2\_image-2.0.3}
+\item I will be using \textbf{x64} libs so I will also edit the \texttt{Path} variables for
+the user and add \texttt{C:\textbackslash{}Dev\textbackslash{}SDL2\_image-2.0.3\textbackslash{}lib\textbackslash{}x64} folder to path.
+\end{itemize}
+
+
+\begin{itemize}
+\item \textbf{Restart the system so the environment variables are set and the path re-read}.
+\item Now you can build the code with CMake
+\end{itemize}
+\end{enumerate}
+
+\subsubsection{On Linux(Ubuntu)}
+\label{sec:orga96cd07}
+
+Download both \texttt{SDL2} and \texttt{SDL2\_image} like this
+\lstset{language=sh,label= ,caption= ,captionpos=b,numbers=none,language=cpp}
+\begin{lstlisting}
+sudo apt install libsdl2-dev
+sudo apt install libsdl2-image-dev
+\end{lstlisting}
+
+The \textbf{CMake} file I have can automatically find and build these libs
+
+\subsection{Qt is used to manage front-end and back-end threads and their communication}
+\label{sec:orgb528a9c}
+\subsubsection{On Windows}
+\label{sec:org05ce9b9}
+\begin{itemize}
+\item Download qt libs from here \url{https://www.qt.io/download}
+\item Add the library directory to path as \texttt{QT\_DIR}, for me it is \texttt{C:\textbackslash{}Dev\textbackslash{}Qt\textbackslash{}5.9.1}
+\item Also add the library binaries to \texttt{Path} for me it is \texttt{C:\textbackslash{}Dev\textbackslash{}Qt\textbackslash{}5.9.1\textbackslash{}msvc2015\_64\textbackslash{}bin}
+\end{itemize}
+
+\subsubsection{On Linux(Ubuntu)}
+\label{sec:orgc5fc946}
+
+\begin{itemize}
+\item Install necessary Qt modules from an updated \textbf{PPA} like this one: \url{https://launchpad.net/\~beineri/+archive/ubuntu/opt-qt592-trusty}
+\item Install necessary modules with these commands after adding the \textbf{PPA}
+\lstset{language=sh,label= ,caption= ,captionpos=b,numbers=none,language=cpp}
+\begin{lstlisting}
+sudo apt install qt59base
+sudo apt install qt59declarative
+\end{lstlisting}
+\end{itemize}
+
+\subsection{Now you should be able to use CMake to build the source code}
+\label{sec:org94cd16d}
+\end{document}

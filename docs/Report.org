@@ -1,3 +1,54 @@
+#+OPTIONS: toc:nil num:t
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper,12pt]
+#+LATEX_HEADER: \usepackage[T1]{fontenc} % For times new roman font
+#+LATEX_HEADER: \usepackage{mathptmx} % For times new roman font
+#+LATEX_HEADER: \linespread{1.3} % Change line spacing
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \usepackage{soul}
+#+LATEX_HEADER: \usepackage{helvet}
+#+LATEX_HEADER: \usepackage{listings}
+#+LATEX_HEADER: \usepackage{inconsolata}
+#+LATEX_HEADER: \usepackage{xcolor-solarized}
+#+LATEX_HEADER: \definecolor{foreground}{RGB}{184, 83, 83} % For verbatim
+#+LATEX_HEADER: \definecolor{background}{RGB}{255, 231, 231} % For verbatim
+#+LATEX_HEADER: \let\OldTexttt\texttt
+#+LATEX_HEADER: \renewcommand{\texttt}[1]{\OldTexttt{\footnotesize\colorbox{background}{\textcolor{foreground}{#1}}}}
+#+LATEX_HEADER: \newenvironment{helvetica}{\fontfamily{phv}\selectfont}{\par}
+#+LATEX_HEADER: \usepackage{hyperref} % Make the hyper-links prettier
+#+LATEX_HEADER: \hypersetup{
+#+LATEX_HEADER: colorlinks=true,
+#+LATEX_HEADER: linkcolor=blue!70!white,
+#+LATEX_HEADER: urlcolor=blue!95!black
+#+LATEX_HEADER: }
+#+LATEX_HEADER: \usepackage{enumitem}
+#+LATEX_HEADER: \setlist[1]{itemsep=5pt}
+#+LATEX_HEADER: \lstdefinelanguage{cpp}{
+#+LATEX_HEADER: language=C++,
+#+LATEX_HEADER: morekeywords={cerr,exit,string},
+#+LATEX_HEADER: deletekeywords={...},
+#+LATEX_HEADER: escapeinside={\%*}{*)},
+#+LATEX_HEADER: showspaces=false,
+#+LATEX_HEADER: showstringspaces=false,
+#+LATEX_HEADER: showtabs=false,
+#+LATEX_HEADER: stepnumber=1,
+#+LATEX_HEADER: tabsize=4,
+#+LATEX_HEADER: breakatwhitespace=false,
+#+LATEX_HEADER: breaklines=true,
+#+LATEX_HEADER: backgroundcolor=\color{solarized-base3},
+#+LATEX_HEADER: basicstyle=\scriptsize\ttfamily\color{solarized-base0},
+#+LATEX_HEADER: commentstyle=\itshape\color{solarized-base01},
+#+LATEX_HEADER: keywordstyle=\color{solarized-green},
+#+LATEX_HEADER: identifierstyle=\color{solarized-blue},
+#+LATEX_HEADER: stringstyle=\color{solarized-cyan},
+#+LATEX_HEADER: moredelim = *[l][\color{solarized-orange}]{\#},
+#+LATEX_HEADER: moredelim = **[s][\color{solarized-cyan}]{<}{>},
+#+LATEX_HEADER: rulecolor=\color{black},
+#+LATEX_HEADER: literate={{\%d}}{{\textcolor{solarized-red}{\%d}}}2
+#+LATEX_HEADER:           {{\%2d}}{{\textcolor{solarized-red}{\%2d}}}3
+#+LATEX_HEADER:           {{\\n}}{{\textcolor{solarized-red}{\textbackslash{}n}}}2,
+#+LATEX_HEADER: }
+
 * AI-Course-Project
 
 We have implemented 3 scenarios of agent based search environment where each agent has to collect 5
@@ -13,20 +64,22 @@ of its targets spawned randomly in the environment with a fixed location.
 - Scenario 3: *Compassionate:* This is the same as Collaboration except no one will ever lie and
   the game is over when one agent collect all of its targets.
 
-The Executables can be found in the *bin* directory
+The Executables can be found in the =bin= directory
 
-* SDL2 is the main rendering library used
+* Setup
+** SDL2 is the main rendering library used
 
- *SDL2_image* add-on is also used to load add-ons
+ *SDL2image* add-on is also used to load add-ons
 
-** On Windows
-*** Setup SDL2
+*** On Windows
+**** Setup SDL2
 - Download *SDL2* libs from [[https://www.libsdl.org/download-2.0.php][here]]
 - Specifically you need the Developmental libs.
 - I am using Visual Studio right now and I downloaded =SDL2-devel-2.0.8-VC.zip=
 - Extract it somewhere, I extracted it to =C:\Dev\SDL2-2.0.8=
 - Create a new file named =sdl2-config.cmake= in there with the following content
 
+#+ATTR_LATEX: :options language=cpp
 #+BEGIN_SRC cmake
 set(SDL2_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include")
 # Support both 32 and 64 bit builds
@@ -44,13 +97,15 @@ string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 - I will be using *x64* libs so I will also edit the =Path= variables for
   the user and add =C:\Dev\SDL2-2.0.8\lib\x64= folder to path.
 
-*** Setup SDL2_image
-- Download *SDL2_image* libs from [[https://www.libsdl.org/projects/SDL_image/][here]]
+**** Setup SDL2image
+- Download *SDL2image* libs from [[https://www.libsdl.org/projects/SDL_image/][here]]
 - Specifically you need the Developmental libs.
 - I am using Visual Studio right now and I downloaded =SDL2_image-devel-2.0.3-VC.zip=
 - Extract it somewhere, I extracted it to =C:\Dev\SDL2_image-2.0.3=
 - Create a new file named =sdl2_image-config.cmake= in there with the following content.
 
+#+ATTR_LATEX: :options language=cpp
+#+BEGIN_SRC cmake
   #+BEGIN_SRC cmake
   set(SDL2_IMAGE_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include")
   # Support both 32 and 64 bit builds
@@ -72,9 +127,10 @@ string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 - *Restart the system so the environment variables are set and the path re-read*.
 - Now you can build the code with CMake
 
-** On Linux(Ubuntu)
+*** On Linux(Ubuntu)
 
 Download both =SDL2= and =SDL2_image= like this
+#+ATTR_LATEX: :options language=cpp
 #+BEGIN_SRC sh
 sudo apt install libsdl2-dev
 sudo apt install libsdl2-image-dev
@@ -82,19 +138,20 @@ sudo apt install libsdl2-image-dev
 
 The *CMake* file I have can automatically find and build these libs
 
-* Qt is used to manage front-end and back-end threads and their communication
-** On Windows
+** Qt is used to manage front-end and back-end threads and their communication
+*** On Windows
  - Download qt libs from here https://www.qt.io/download
  - Add the library directory to path as =QT_DIR=, for me it is =C:\Dev\Qt\5.9.1=
  - Also add the library binaries to =Path= for me it is =C:\Dev\Qt\5.9.1\msvc2015_64\bin=
 
-** On Linux(Ubuntu)
+*** On Linux(Ubuntu)
 
  - Install necessary Qt modules from an updated *PPA* like this one: https://launchpad.net/~beineri/+archive/ubuntu/opt-qt592-trusty
  - Install necessary modules with these commands after adding the *PPA*
+  #+ATTR_LATEX: :options language=cpp
   #+BEGIN_SRC sh
   sudo apt install qt59base
   sudo apt install qt59declarative
   #+END_SRC
 
-* Now you should be able to use CMake to build the source code
+** Now you should be able to use CMake to build the source code

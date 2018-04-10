@@ -16,15 +16,19 @@ void Environment::initializeEnvironment()
      * This method is used instead of a constructor because we have to use the same environemnt for
      * multiple iterations and this means the connection b/w the front end is not killed
      */
-    std::function<int()> rand = [=]() {
+    std::function<int()> rand1 = [=]() {
         int floor = 0, ceiling = 1000;  // Range of the random number
+        return floor + std::rand() / (RAND_MAX / ceiling + floor);
+    };
+    std::function<int()> rand2 = [=]() {
+        int floor = 0, ceiling = 990;  // Range of the random number
         return floor + std::rand() / (RAND_MAX / ceiling + floor);
     };
 
     for (int i = 0; i < 5; ++i) {
-        g_agents.push_back(Agent(Point<int>(rand(), rand()), i));
+        g_agents.push_back(Agent(Point<int>(rand1(), rand1()), i));
         for (int j = 0; j < 5; ++j) {
-            g_targets.push_back(Target(Point<int>(rand(), rand()), i));
+            g_targets.push_back(Target(Point<int>(rand2(), rand2()), i));
         }
     }
 }
