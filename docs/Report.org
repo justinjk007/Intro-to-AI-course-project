@@ -64,7 +64,7 @@ of its targets spawned randomly in the environment with a fixed location.
 - Scenario 3: *Compassionate:* This is the same as Collaboration except no one will ever lie and
   the game is over when one agent collect all of its targets.
 
-The Executables can be found in the =bin= directory
+The Executables can be found in the =bin= directory. Running =run_AI_scenes.exe= will run each scenarios once.
 
 * Setup
 ** SDL2 is the main rendering library used

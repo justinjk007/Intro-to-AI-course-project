@@ -49,6 +49,6 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets
   DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 message("-- Copied all the assets")
 
-add_executable(main src/Simulation.cpp src/AI.cpp src/Helpers.cpp src/main.cpp src/WorkerThread.cpp)
+add_executable(run_AI_scenes src/Simulation.cpp src/AI.cpp src/Helpers.cpp src/main.cpp src/WorkerThread.cpp)
 add_executable(run_tests tests/tests.cpp)
-target_link_libraries(main ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} Qt5::Widgets)
+target_link_libraries(run_AI_scenes ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} Qt5::Widgets)
