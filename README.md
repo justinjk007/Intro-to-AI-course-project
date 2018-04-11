@@ -1,6 +1,6 @@
 # AI-Course-Project
 
-#+html: <p align="center"><img height="600" width="600" src="./docs/cover.png" /></p>
+<p align="center"><img height="750" width="750" src="./docs/cover.png" /></p>
 
 We have implemented 3 scenarios of agent based search environment where each agent has to collect 5
 of its targets spawned randomly in the environment with a fixed location.
