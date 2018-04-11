@@ -1,4 +1,4 @@
-# SOFE3720- Intro to Artificial Intelligence
+# SOFE3720: Intro to Artificial Intelligence
 
 Agent-Target simulation where each Agent needs to obtain its **5** Targets to end the iteration!
 
