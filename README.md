@@ -1,4 +1,6 @@
-# AI-Course-Project
+# SOFE3720- Intro to Artificial Intelligence
+
+Agent-Target simulation where each Agent needs to obtain its **5** Targets to end the iteration!
 
 <p align="center"><img height="750" width="750" src="./docs/cover.png" /></p>
 
